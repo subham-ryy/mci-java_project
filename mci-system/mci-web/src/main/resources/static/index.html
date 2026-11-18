@@ -1,0 +1,3289 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MCI — Multi-Agent Incident Resolution System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <style>
+    :root {
+      --bg-main: #F0E9E3;
+      --bg-card: #F5F1EC;
+      --bg-card-subtle: #F4EFEA;
+      --bg-pill-active: #E6DDD2;
+      --bg-status-pill: #EAE3DA;
+      --bg-dark-card: #1C1B19;
+      --border-hairline: #E2DBD2;
+      --border-button: #CFC7BC;
+      --text-primary: #1D1C1A;
+      --text-secondary: #5E5A54;
+      --text-muted: #8C867E;
+      --accent-bronze: #9B8265;
+      --accent-green: #3A8F5C;
+      --font-serif: 'Playfair Display', Georgia, serif;
+      --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* App Layout Shell */
+    .dashboard-shell {
+      display: flex;
+      min-height: 100vh;
+      background-color: var(--bg-main);
+    }
+
+    /* ================= LEFT SIDEBAR ================= */
+    .sidebar {
+      width: 244px;
+      flex-shrink: 0;
+      background-color: var(--bg-main);
+      border-right: 1px solid var(--border-hairline);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 28px 18px 22px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 10px;
+      margin-bottom: 34px;
+    }
+
+    .brand-name {
+      font-family: var(--font-serif);
+      font-size: 21px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      color: var(--text-primary);
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .nav-item a {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 11px 16px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: #4A4640;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .nav-item a:hover {
+      background-color: rgba(230, 221, 210, 0.5);
+      color: var(--text-primary);
+    }
+
+    .nav-item.active a {
+      background-color: var(--bg-pill-active);
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .nav-icon {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.65;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
+    }
+
+    /* Decorative Arcs at Bottom Left of Sidebar */
+    .sidebar-decor {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 244px;
+      height: 260px;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* System Online Status Box */
+    .system-online-card {
+      position: relative;
+      z-index: 2;
+      background-color: var(--bg-status-pill);
+      border: 1px solid #DFD7CC;
+      border-radius: 12px;
+      padding: 11px 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background-color: var(--accent-green);
+      margin-top: 5px;
+      flex-shrink: 0;
+    }
+
+    .system-online-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+
+    .system-online-sub {
+      font-size: 10.5px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    /* ================= MAIN WORKSPACE ================= */
+    .main-workspace {
+      flex: 1;
+      padding: 22px 36px 26px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      max-width: 1440px;
+    }
+
+    /* Top Utility Header */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    .eyebrow-line {
+      width: 24px;
+      height: 1px;
+      background-color: #B8B0A4;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .search-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+      border-radius: 50%;
+      transition: background-color 0.2s ease;
+    }
+
+    .search-btn:hover {
+      background-color: var(--bg-pill-active);
+    }
+
+    .topbar-divider {
+      width: 1px;
+      height: 20px;
+      background-color: #DCD4C9;
+    }
+
+    .avatar-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background-color: var(--text-primary);
+      color: #F2EDE8;
+      font-size: 12px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+    }
+
+    /* ================= MIDDLE TWO-COLUMN GRID ================= */
+    .center-grid {
+      display: grid;
+      grid-template-columns: 1fr 318px;
+      gap: 28px;
+      align-items: start;
+    }
+
+    /* Hero Banner + Architectural Visual */
+    .hero-block {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      align-items: center;
+      position: relative;
+      min-height: 335px;
+    }
+
+    .hero-copy {
+      padding-top: 14px;
+      z-index: 2;
+    }
+
+    .hero-title {
+      font-family: var(--font-serif);
+      font-size: clamp(42px, 4.1vw, 58px);
+      font-weight: 400;
+      line-height: 1.03;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+    }
+
+    .hero-title .accent-word {
+      display: block;
+      color: var(--accent-bronze);
+    }
+
+    .hero-description {
+      margin-top: 20px;
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      max-width: 345px;
+    }
+
+    .hero-cta-group {
+      margin-top: 26px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background-color: var(--text-primary);
+      color: #F2EDE8;
+      border: 1px solid var(--text-primary);
+      border-radius: 999px;
+      padding: 12px 24px;
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: transform 0.15s ease, background-color 0.2s ease;
+    }
+
+    .btn-primary:hover {
+      background-color: #2E2C29;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background-color: transparent;
+      color: var(--text-primary);
+      border: 1px solid var(--border-button);
+      border-radius: 999px;
+      padding: 12px 24px;
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+      background-color: rgba(230, 221, 210, 0.45);
+      border-color: #B6ADA0;
+    }
+
+    /* Hero Architectural Visual Container */
+    .hero-artwork {
+      position: relative;
+      width: 100%;
+      height: 330px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-top: -12px;
+    }
+
+    .hero-artwork svg,
+    .hero-artwork img,
+    .hero-img {
+      width: 250%;
+      max-width: 620px;
+      height: auto;
+      max-height: 335px;
+      object-fit: contain;
+      display: block;
+    }
+
+    /* ================= OUR AGENT ECOSYSTEM ================= */
+    .ecosystem-section {
+      margin-top: 18px;
+    }
+
+    .section-header-line {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-family: var(--font-serif);
+      font-size: 19px;
+      font-weight: 500;
+      color: var(--text-primary);
+      white-space: nowrap;
+    }
+
+    .header-divider {
+      flex: 1;
+      height: 1px;
+      background-color: var(--border-hairline);
+    }
+
+    .learn-more-link {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-primary);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: opacity 0.2s ease;
+    }
+
+    .learn-more-link:hover {
+      opacity: 0.7;
+    }
+
+    .agents-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .agent-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 16px;
+      padding: 18px 16px 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 162px;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+
+    .agent-card:hover {
+      transform: translateY(-2px);
+      border-color: #CFC6BA;
+      box-shadow: 0 8px 20px rgba(29, 28, 26, 0.04);
+    }
+
+    .agent-icon-circle {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background-color: #E7DFD5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #3D3934;
+      margin-bottom: 14px;
+    }
+
+    .agent-name {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+
+    .agent-desc {
+      font-size: 11.5px;
+      line-height: 1.45;
+      color: var(--text-secondary);
+    }
+
+    .agent-card-footer {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 10px;
+    }
+
+    .diagonal-arrow-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 1px solid #DFD7CC;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #4A4640;
+      font-size: 11px;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .agent-card:hover .diagonal-arrow-btn {
+      background-color: var(--text-primary);
+      border-color: var(--text-primary);
+      color: #F2EDE8;
+    }
+
+    /* ================= RIGHT RAIL CARDS ================= */
+    .right-rail {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      margin-top: 8px;
+    }
+
+    /* System Status Card */
+    .status-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 18px;
+      padding: 20px 22px;
+    }
+
+    .status-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .status-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .status-dot-lg {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--accent-green);
+    }
+
+    .card-serif-title {
+      font-family: var(--font-serif);
+      font-size: 17px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .live-badge {
+      background-color: #E8E2DA;
+      color: var(--text-secondary);
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 10px;
+      border-radius: 6px;
+    }
+
+    .sparkline-container {
+      margin: 18px 0 20px;
+      height: 68px;
+      width: 100%;
+    }
+
+    .sparkline-container svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .kpi-value {
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .kpi-label {
+      font-size: 10.5px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    /* Recent Activity Dark Card */
+    .activity-card {
+      background-color: var(--bg-dark-card);
+      border-radius: 18px;
+      padding: 22px;
+      color: #F2EDE8;
+    }
+
+    .activity-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .activity-header .card-serif-title {
+      color: #F2EDE8;
+    }
+
+    .view-all-link {
+      font-size: 11.5px;
+      color: #A8A29A;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .view-all-link:hover {
+      color: #F2EDE8;
+    }
+
+    .timeline-list {
+      list-style: none;
+      position: relative;
+      padding-left: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .timeline-list::before {
+      content: '';
+      position: absolute;
+      left: 3.5px;
+      top: 6px;
+      bottom: 8px;
+      width: 1px;
+      background-color: #383530;
+    }
+
+    .timeline-item {
+      position: relative;
+      display: grid;
+      grid-template-columns: 38px 1fr;
+      gap: 10px;
+      font-size: 11.5px;
+      line-height: 1.45;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -18px;
+      top: 4px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #8A837A;
+    }
+
+    .timeline-time {
+      color: #8C867E;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .timeline-text {
+      color: #E5DFD7;
+    }
+
+    /* ================= CURRENT MISSION BOTTOM BAR ================= */
+    .current-mission-card {
+      margin-top: 20px;
+      background-color: var(--bg-card-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: 18px;
+      padding: 18px 24px;
+    }
+
+    .mission-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .mission-label-wrap {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    .mission-ring-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      border: 1.6px solid var(--text-primary);
+    }
+
+    .mission-section-title {
+      font-family: var(--font-serif);
+      font-size: 15.5px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .in-progress-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background-color: #EAE2D7;
+      color: #7D674E;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 4px 12px;
+      border-radius: 999px;
+    }
+
+    .in-progress-badge::before {
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background-color: #9B8265;
+    }
+
+    .mission-main-row {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+    }
+
+    .progress-donut {
+      position: relative;
+      width: 58px;
+      height: 58px;
+      flex-shrink: 0;
+    }
+
+    .progress-donut svg {
+      width: 58px;
+      height: 58px;
+      transform: rotate(-90deg);
+    }
+
+    .progress-percent {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .mission-details {
+      flex: 1;
+    }
+
+    .mission-heading {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .mission-subtext {
+      font-size: 12.5px;
+      color: var(--text-secondary);
+      margin-top: 3px;
+    }
+
+    .linear-progress-track {
+      margin-top: 12px;
+      width: 100%;
+      max-width: 560px;
+      height: 4px;
+      background-color: #E2DBD2;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .linear-progress-fill {
+      width: 48%;
+      height: 100%;
+      background-color: var(--accent-bronze);
+      border-radius: 999px;
+      transition: width 0.4s ease;
+    }
+
+    .mission-divider {
+      width: 1px;
+      height: 44px;
+      background-color: #DFD7CC;
+      margin: 0 6px;
+    }
+
+    .btn-view-details {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background-color: transparent;
+      border: 1px solid var(--border-button);
+      border-radius: 999px;
+      padding: 10px 22px;
+      font-family: var(--font-sans);
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--text-primary);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background-color 0.2s ease;
+    }
+
+    .btn-view-details:hover {
+      background-color: rgba(230, 221, 210, 0.5);
+    }
+
+    /* ================= RESPONSIVE ADAPTATIONS ================= */
+    @media (max-width: 1200px) {
+      .center-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .right-rail {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .dashboard-shell {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border-hairline);
+        padding: 16px 20px;
+      }
+
+      .sidebar-decor,
+      .system-online-card {
+        display: none;
+      }
+
+      .brand {
+        margin-bottom: 14px;
+      }
+
+      .nav-list {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .hero-block {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-artwork {
+        display: none;
+      }
+
+      .agents-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .right-rail {
+        grid-template-columns: 1fr;
+      }
+
+      .mission-main-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .mission-divider {
+        display: none;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .main-workspace {
+        padding: 18px;
+      }
+
+      .agents-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ================= DYNAMIC MODALS & VIEWS ================= */
+    .page-view.hidden {
+      display: none !important;
+    }
+
+    /* Modal Backdrop */
+    .mci-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(28, 27, 25, 0.55);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      padding: 20px;
+    }
+
+    .mci-modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Modal Container */
+    .mci-modal-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 640px;
+      max-height: 88vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 24px 60px rgba(28, 27, 25, 0.2);
+      transform: translateY(14px) scale(0.98);
+      transition: transform 0.25s ease;
+      overflow: hidden;
+    }
+
+    .mci-modal-card.wide {
+      max-width: 940px;
+    }
+
+    .mci-modal-backdrop.open .mci-modal-card {
+      transform: translateY(0) scale(1);
+    }
+
+    .mci-modal-header {
+      padding: 22px 28px 18px;
+      border-bottom: 1px solid var(--border-hairline);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .mci-modal-title {
+      font-family: var(--font-serif);
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .mci-modal-subtitle {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    .mci-modal-close {
+      background: none;
+      border: 1px solid var(--border-button);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      line-height: 1;
+      color: var(--text-secondary);
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .mci-modal-close:hover {
+      background: var(--bg-pill-active);
+      color: var(--text-primary);
+    }
+
+    .mci-modal-body {
+      padding: 24px 28px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .mci-modal-footer {
+      padding: 16px 28px 22px;
+      border-top: 1px solid var(--border-hairline);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      background: rgba(240, 233, 227, 0.4);
+    }
+
+    /* Modal Inputs & Presets */
+    .mci-input-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+    }
+
+    .mci-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px solid var(--border-button);
+      background: #FAF7F4;
+      font-family: var(--font-sans);
+      font-size: 13.5px;
+      line-height: 1.5;
+      color: var(--text-primary);
+      resize: vertical;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .mci-textarea:focus {
+      outline: none;
+      border-color: var(--accent-bronze);
+      box-shadow: 0 0 0 3px rgba(155, 130, 101, 0.15);
+    }
+
+    .mci-presets-group {
+      margin-top: 14px;
+    }
+
+    .mci-presets-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .mci-presets-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .mci-chip {
+      background: var(--bg-main);
+      border: 1px solid var(--border-hairline);
+      border-radius: 999px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .mci-chip:hover {
+      background: var(--bg-pill-active);
+      color: var(--text-primary);
+      border-color: var(--border-button);
+    }
+
+    /* Details Tabs */
+    .mci-tabs-header {
+      display: flex;
+      gap: 8px;
+      border-bottom: 1px solid var(--border-hairline);
+      padding: 0 28px;
+      background: var(--bg-card);
+    }
+
+    .mci-tab-btn {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      padding: 14px 12px 12px;
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .mci-tab-btn:hover {
+      color: var(--text-primary);
+    }
+
+    .mci-tab-btn.active {
+      color: var(--text-primary);
+      font-weight: 600;
+      border-bottom-color: var(--text-primary);
+    }
+
+    .mci-tab-pane {
+      display: none;
+    }
+
+    .mci-tab-pane.active {
+      display: block;
+    }
+
+    /* Agent & Status Badges */
+    .agent-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .agent-NAVIGATOR {
+      background-color: #E2ECF7;
+      color: #1D5288;
+    }
+
+    .agent-DATA_FILE {
+      background-color: #EFE6F7;
+      color: #632B8C;
+    }
+
+    .agent-DOCKER {
+      background-color: #FBECE4;
+      color: #A34415;
+    }
+
+    .agent-REPORT {
+      background-color: #E2F3EC;
+      color: #1E6E48;
+    }
+
+    .status-badge-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 999px;
+    }
+
+    .status-DONE {
+      background-color: #E2F3EC;
+      color: #1E6E48;
+    }
+
+    .status-RUNNING {
+      background-color: #F8ECD8;
+      color: #8C6228;
+    }
+
+    .status-PENDING {
+      background-color: #EDE8E2;
+      color: #6E6860;
+    }
+
+    .status-FAILED {
+      background-color: #FBE5E5;
+      color: #A72828;
+    }
+
+    .status-SKIPPED {
+      background-color: #EDE8E2;
+      color: #99938B;
+    }
+
+    /* Subtask DAG & Items */
+    .subtasks-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .subtask-card {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: 12px;
+      padding: 14px 18px;
+      transition: all 0.2s ease;
+    }
+
+    .subtask-card:hover {
+      border-color: var(--border-button);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+
+    .subtask-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+
+    .subtask-desc {
+      font-size: 13.5px;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+
+    .subtask-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 8px;
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+
+    .subtask-output-box {
+      margin-top: 10px;
+      padding: 10px 14px;
+      background: #1C1B19;
+      color: #E6E1DA;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 11.5px;
+      white-space: pre-wrap;
+      word-break: break-all;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+
+    /* Audit Table */
+    .audit-filters {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .audit-filter-pill {
+      background: var(--bg-main);
+      border: 1px solid var(--border-hairline);
+      border-radius: 999px;
+      padding: 5px 14px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+
+    .audit-filter-pill.active {
+      background: var(--text-primary);
+      color: #FAF7F4;
+      border-color: var(--text-primary);
+    }
+
+    .audit-table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border-hairline);
+      border-radius: 12px;
+      background: var(--bg-card-subtle);
+    }
+
+    .audit-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+      text-align: left;
+    }
+
+    .audit-table th {
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--border-hairline);
+      background: rgba(230, 221, 210, 0.4);
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .audit-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-hairline);
+      vertical-align: middle;
+    }
+
+    .audit-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .decision-ALLOWED {
+      color: #2E7D5B;
+      font-weight: 600;
+    }
+
+    .decision-DENIED {
+      color: #C0392B;
+      font-weight: 700;
+      background: #FCE8E8;
+      padding: 3px 8px;
+      border-radius: 6px;
+      display: inline-block;
+    }
+
+    /* Artifacts Grid */
+    .artifacts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 14px;
+    }
+
+    .artifact-card {
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-hairline);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .artifact-card:hover {
+      border-color: var(--border-button);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+    }
+
+    .artifact-top {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .artifact-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: var(--bg-status-pill);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .artifact-title {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text-primary);
+      word-break: break-all;
+    }
+
+    .artifact-kind-pill {
+      font-size: 10.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    /* Markdown Container */
+    .markdown-rendered {
+      background: #FAF7F4;
+      border: 1px solid var(--border-hairline);
+      border-radius: 12px;
+      padding: 24px 28px;
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--text-primary);
+    }
+
+    .markdown-rendered h1,
+    .markdown-rendered h2,
+    .markdown-rendered h3 {
+      font-family: var(--font-serif);
+      color: var(--text-primary);
+      margin: 18px 0 10px;
+    }
+
+    .markdown-rendered h1:first-child {
+      margin-top: 0;
+    }
+
+    .markdown-rendered p {
+      margin-bottom: 12px;
+    }
+
+    .markdown-rendered ul,
+    .markdown-rendered ol {
+      margin-left: 20px;
+      margin-bottom: 12px;
+    }
+
+    .markdown-rendered li {
+      margin-bottom: 4px;
+    }
+
+    .markdown-rendered code {
+      background: #EDE7E0;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 12.5px;
+    }
+
+    .markdown-rendered pre {
+      background: #1C1B19;
+      color: #E6E1DA;
+      padding: 14px 18px;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 14px 0;
+    }
+
+    .markdown-rendered pre code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+
+    /* Full Page Views (Missions, Logs, Agents) */
+    .section-page-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-hairline);
+      border-radius: 20px;
+      padding: 24px 28px;
+      margin-bottom: 24px;
+    }
+
+    .section-page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .section-page-title {
+      font-family: var(--font-serif);
+      font-size: 24px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+
+    /* ================= LIVE OUTPUT FILES & VIEWER ================= */
+    .mission-artifacts-bar {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-hairline);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .mission-artifacts-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mission-artifacts-chips {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .file-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      background: #FAF7F4;
+      border: 1px solid var(--border-hairline);
+      color: var(--text-primary);
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .file-chip:hover {
+      background: var(--bg-pill-active);
+      border-color: var(--border-button);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    }
+
+    .file-chip.chip-pdf {
+      border-color: #E2B8B8;
+      background: #FDF6F6;
+      color: #922B21;
+      font-weight: 600;
+    }
+    .file-chip.chip-pdf:hover {
+      background: #FADBD8;
+    }
+
+    .file-chip.chip-report {
+      border-color: #A9DFBF;
+      background: #F4FAF6;
+      color: #196F3D;
+      font-weight: 600;
+    }
+    .file-chip.chip-report:hover {
+      background: #D4EFDF;
+    }
+
+    .file-chip.chip-data {
+      border-color: #D2B4DE;
+      background: #FAF5FB;
+      color: #6C3483;
+    }
+    .file-chip.chip-data:hover {
+      background: #EBDEF0;
+    }
+
+    .file-chip.chip-code {
+      border-color: #F8C471;
+      background: #FEF9E7;
+      color: #B7950B;
+    }
+    .file-chip.chip-code:hover {
+      background: #FCF3CF;
+    }
+
+    /* Enhanced Artifact Card */
+    .artifact-card-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .btn-view-file {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--text-primary);
+      color: #FAF7F4;
+      border: 1px solid var(--text-primary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-view-file:hover {
+      background: #383531;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .btn-download-file {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      background: var(--bg-card);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-button);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-download-file:hover {
+      background: var(--bg-pill-active);
+      color: var(--text-primary);
+    }
+
+    .file-code-container {
+      background: #1C1B19;
+      color: #E6E1DA;
+      padding: 24px;
+      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-all;
+      min-height: calc(90vh - 120px);
+      box-sizing: border-box;
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class="dashboard-shell">
+    <!-- LEFT NAVIGATION SIDEBAR -->
+    <aside class="sidebar">
+      <div>
+        <div class="brand">
+          <!-- Custom 4-Point Sparkle Star Logo -->
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M12 1.5C12.4 7.8 14.2 10.6 22.5 12C14.2 13.4 12.4 16.2 12 22.5C11.6 16.2 9.8 13.4 1.5 12C9.8 10.6 11.6 7.8 12 1.5Z"
+              fill="#1D1C1A" />
+          </svg>
+          <span class="brand-name">MCI</span>
+        </div>
+
+        <ul class="nav-list" id="sidebarNav">
+          <li class="nav-item active">
+            <a href="#overview">
+              <svg class="nav-icon" viewBox="0 0 24 24">
+                <rect x="3" y="3" width="7" height="7" rx="1.5" />
+                <rect x="14" y="3" width="7" height="7" rx="1.5" />
+                <rect x="3" y="14" width="7" height="7" rx="1.5" />
+                <rect x="14" y="14" width="7" height="7" rx="1.5" />
+              </svg>
+              Overview
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#missions">
+              <svg class="nav-icon" viewBox="0 0 24 24">
+                <polygon points="12 2 2 7 12 12 22 7 12 2" />
+                <polyline points="2 12 12 17 22 12" />
+                <polyline points="2 17 12 22 22 17" />
+              </svg>
+              Missions
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#runs">
+              <svg class="nav-icon" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9" />
+                <polygon points="10 8.5 16 12 10 15.5 10 8.5" />
+              </svg>
+              Runs
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#agents">
+              <svg class="nav-icon" viewBox="0 0 24 24">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+              Agents
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#logs">
+              <svg class="nav-icon" viewBox="0 0 24 24">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="8" y1="13" x2="16" y2="13" />
+                <line x1="8" y1="17" x2="13" y2="17" />
+              </svg>
+              Logs
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#settings">
+              <svg class="nav-icon" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="3" />
+                <path
+                  d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+              </svg>
+              Settings
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Subtle Concentric Arcs & Sparkle Graphic -->
+      <svg class="sidebar-decor" viewBox="0 0 244 260" fill="none" aria-hidden="true">
+        <circle cx="-10" cy="270" r="225" stroke="#DDD5CA" stroke-width="1" />
+        <circle cx="-10" cy="270" r="185" stroke="#E3DCD2" stroke-width="1" />
+        <path
+          d="M119 108C119.3 112.5 120.5 114.2 126 115C120.5 115.8 119.3 117.5 119 122C118.7 117.5 117.5 115.8 112 115C117.5 114.2 118.7 112.5 119 108Z"
+          fill="#4A4640" />
+      </svg>
+
+      <!-- Bottom System Online Pill -->
+      <div class="system-online-card">
+        <span class="status-dot"></span>
+        <div>
+          <div class="system-online-title">System Online</div>
+          <div class="system-online-sub">All agents operational</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT WORKSPACE -->
+    <main class="main-workspace">
+      <div>
+        <!-- Top Header Bar -->
+        <header class="topbar">
+          <div class="eyebrow">
+            <span class="eyebrow-line"></span>
+            <span>MULTI-AGENT INCIDENT RESOLUTION SYSTEM</span>
+          </div>
+
+          <div class="topbar-actions">
+            <button class="search-btn" aria-label="Search">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                <circle cx="11" cy="11" r="7.5" />
+                <line x1="16.65" y1="16.65" x2="21" y2="21" />
+              </svg>
+            </button>
+            <span class="topbar-divider"></span>
+            <div class="avatar-badge" title="User Profile">SR</div>
+          </div>
+        </header>
+
+        <!-- Center Two-Column Section -->
+        
+        <!-- ================= PAGE VIEWS ================= -->
+        <!-- View 1: Main Dashboard (Default) -->
+        <div id="viewDashboard" class="page-view">
+          <div class="center-grid">
+
+          <!-- Left Primary Column -->
+          <div>
+            <!-- Hero Section -->
+            <section class="hero-block">
+              <div class="hero-copy">
+                <h1 class="hero-title">
+                  Intelligent<br />
+                  Incident<br />
+                  <span class="accent-word">Resolution</span>
+                </h1>
+
+                <p class="hero-description">
+                  A coordinated multi-agent platform that investigates, executes and resolves technical incidents
+                  end-to-end.
+                </p>
+
+                <div class="hero-cta-group">
+                  <button class="btn-primary" id="startMissionBtn">
+                    <svg width="10" height="11" viewBox="0 0 10 11" fill="currentColor">
+                      <polygon points="1,0.5 9.5,5.5 1,10.5" />
+                    </svg>
+                    Start a Mission
+                  </button>
+                  <button class="btn-secondary">
+                    View Architecture
+                    <span>→</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Architectural Hero Composition -->
+              <div class="hero-artwork" aria-hidden="true">
+                <img src="asset.png" alt="Multi-Agent Incident Resolution Architectural Artwork" class="hero-img" />
+              </div>
+            </section>
+
+            <!-- Our Agent Ecosystem -->
+            <section class="ecosystem-section">
+              <div class="section-header-line">
+                <h2 class="section-title">Our Agent Ecosystem</h2>
+                <span class="header-divider"></span>
+                <a href="#agents" class="learn-more-link">Learn More <span>→</span></a>
+              </div>
+
+              <div class="agents-grid">
+                <!-- Card 1 -->
+                <article class="agent-card">
+                  <div>
+                    <div class="agent-icon-circle">
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="1.7">
+                        <circle cx="12" cy="12" r="9" />
+                        <line x1="3" y1="12" x2="21" y2="12" />
+                        <path d="M12 3a14.5 14.5 0 0 1 0 18 14.5 14.5 0 0 1 0-18" />
+                      </svg>
+                    </div>
+                    <h3 class="agent-name">Navigator Agent</h3>
+                    <p class="agent-desc">Search the web &amp; research solutions.</p>
+                  </div>
+                  <div class="agent-card-footer">
+                    <span class="diagonal-arrow-btn">↗</span>
+                  </div>
+                </article>
+
+                <!-- Card 2 -->
+                <article class="agent-card">
+                  <div>
+                    <div class="agent-icon-circle">
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="1.7">
+                        <path
+                          d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+                        <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+                        <line x1="12" y1="22.08" x2="12" y2="12" />
+                      </svg>
+                    </div>
+                    <h3 class="agent-name">Docker Agent</h3>
+                    <p class="agent-desc">Execute code in isolated environments.</p>
+                  </div>
+                  <div class="agent-card-footer">
+                    <span class="diagonal-arrow-btn">↗</span>
+                  </div>
+                </article>
+
+                <!-- Card 3 -->
+                <article class="agent-card">
+                  <div>
+                    <div class="agent-icon-circle">
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="1.7">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                      </svg>
+                    </div>
+                    <h3 class="agent-name">File Agent</h3>
+                    <p class="agent-desc">Manage files &amp; project artifacts.</p>
+                  </div>
+                  <div class="agent-card-footer">
+                    <span class="diagonal-arrow-btn">↗</span>
+                  </div>
+                </article>
+
+                <!-- Card 4 -->
+                <article class="agent-card">
+                  <div>
+                    <div class="agent-icon-circle">
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="1.7">
+                        <line x1="18" y1="20" x2="18" y2="10" />
+                        <line x1="12" y1="20" x2="12" y2="4" />
+                        <line x1="6" y1="20" x2="6" y2="14" />
+                      </svg>
+                    </div>
+                    <h3 class="agent-name">Summary Agent</h3>
+                    <p class="agent-desc">Compile results &amp; generate reports.</p>
+                  </div>
+                  <div class="agent-card-footer">
+                    <span class="diagonal-arrow-btn">↗</span>
+                  </div>
+                </article>
+              </div>
+            </section>
+          </div>
+
+          <!-- Right Rail Column -->
+          <aside class="right-rail">
+            <!-- System Status Card -->
+            <section class="status-card">
+              <div class="status-card-header">
+                <div class="status-title-wrap">
+                  <span class="status-dot-lg"></span>
+                  <h2 class="card-serif-title">System Status</h2>
+                </div>
+                <span class="live-badge">Live</span>
+              </div>
+
+              <div class="sparkline-container">
+                <svg viewBox="0 0 270 68" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="sparklineFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#4D8B62" stop-opacity="0.22" />
+                      <stop offset="100%" stop-color="#4D8B62" stop-opacity="0.0" />
+                    </linearGradient>
+                  </defs>
+                  <path
+                    d="M 0 46 C 25 43, 42 50, 66 42 C 90 34, 108 44, 134 33 C 156 23, 174 32, 202 22 C 228 13, 248 6, 270 8 L 270 68 L 0 68 Z"
+                    fill="url(#sparklineFill)" />
+                  <path
+                    d="M 0 46 C 25 43, 42 50, 66 42 C 90 34, 108 44, 134 33 C 156 23, 174 32, 202 22 C 228 13, 248 6, 270 8"
+                    fill="none" stroke="#4D8B62" stroke-width="1.8" stroke-linecap="round" />
+                </svg>
+              </div>
+
+              <div class="kpi-grid">
+                <div>
+                  <div class="kpi-value" id="kpiTasksResolved">--</div>
+                  <div class="kpi-label">Tasks Resolved</div>
+                </div>
+                <div>
+                  <div class="kpi-value" id="kpiAgentsActive">04</div>
+                  <div class="kpi-label">Agents Active</div>
+                </div>
+                <div>
+                  <div class="kpi-value" id="kpiSuccessRate">--%</div>
+                  <div class="kpi-label">Success Rate</div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Recent Activity Dark Card -->
+            <section class="activity-card">
+              <div class="activity-header">
+                <h2 class="card-serif-title">Recent Activity</h2>
+                <a href="#logs" class="view-all-link" id="viewAllLogsLink">View all →</a>
+              </div>
+
+              <ul class="timeline-list" id="recentActivityList">
+                <li class="timeline-item">
+                  <span class="timeline-time">14:32</span>
+                  <span class="timeline-text">Orchestrator assigned tasks to 4 agents</span>
+                </li>
+                <li class="timeline-item">
+                  <span class="timeline-time">14:31</span>
+                  <span class="timeline-text">Navigator fetched 3 new references</span>
+                </li>
+                <li class="timeline-item">
+                  <span class="timeline-time">14:30</span>
+                  <span class="timeline-text">Docker execution completed (success)</span>
+                </li>
+                <li class="timeline-item">
+                  <span class="timeline-time">14:28</span>
+                  <span class="timeline-text">Report generated</span>
+                </li>
+              </ul>
+            </section>
+          </aside>
+        </div>
+      </div>
+      <!-- View 2: Missions List -->
+      <div id="viewMissions" class="page-view hidden">
+        <div class="section-page-card">
+          <div class="section-page-header">
+            <div>
+              <h2 class="section-page-title">Missions History</h2>
+              <p class="mci-modal-subtitle">Comprehensive record of all multi-agent missions and executions</p>
+            </div>
+            <button class="btn-primary" onclick="openStartMissionModal()">
+              <svg width="10" height="11" viewBox="0 0 10 11" fill="currentColor">
+                <polygon points="1,0.5 9.5,5.5 1,10.5" />
+              </svg>
+              Start New Mission
+            </button>
+          </div>
+          <div class="audit-table-wrap">
+            <table class="audit-table">
+              <thead>
+                <tr>
+                  <th>Run ID</th>
+                  <th>Objective</th>
+                  <th>Status</th>
+                  <th>Subtasks</th>
+                  <th>Created</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="missionsTableBody">
+                <tr><td colspan="6" style="text-align:center; padding: 24px; color: var(--text-muted);">Loading missions...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- View 3: Audit Logs -->
+      <div id="viewLogs" class="page-view hidden">
+        <div class="section-page-card">
+          <div class="section-page-header">
+            <div>
+              <h2 class="section-page-title">Security Gateway Audit Log</h2>
+              <p class="mci-modal-subtitle">Cryptographically verifiable chokepoint log of all tool access decisions</p>
+            </div>
+            <div class="audit-filters" style="margin-bottom: 0;">
+              <button class="audit-filter-pill active" onclick="filterGlobalLogs('ALL')">All</button>
+              <button class="audit-filter-pill" onclick="filterGlobalLogs('ALLOWED')">Allowed Only</button>
+              <button class="audit-filter-pill" onclick="filterGlobalLogs('DENIED')">Denied Only</button>
+            </div>
+          </div>
+          <div class="audit-table-wrap">
+            <table class="audit-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Run</th>
+                  <th>Agent</th>
+                  <th>Tool Requested</th>
+                  <th>Decision</th>
+                  <th>Reason / Arguments</th>
+                  <th>Timestamp</th>
+                </tr>
+              </thead>
+              <tbody id="globalLogsTableBody">
+                <tr><td colspan="7" style="text-align:center; padding: 24px; color: var(--text-muted);">Select a mission to inspect logs.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- View 4: Agents Overview -->
+      <div id="viewAgents" class="page-view hidden">
+        <div class="section-page-card">
+          <div class="section-page-header">
+            <div>
+              <h2 class="section-page-title">Agent Ecosystem & Security Boundary</h2>
+              <p class="mci-modal-subtitle">Strict permission policies enforced by the ToolGateway</p>
+            </div>
+          </div>
+          <div class="agents-grid" style="grid-template-columns: repeat(2, 1fr); margin-top: 0;">
+            <article class="agent-card" style="min-height: 180px;">
+              <div>
+                <span class="agent-pill agent-NAVIGATOR">NAVIGATOR AGENT</span>
+                <h3 class="agent-name" style="margin-top: 10px;">Web Research & Retrieval</h3>
+                <p class="agent-desc">Allowed Tools: <code>browser.fetch</code> (Jsoup HTML parser with SSRF defense blocking loopback, link-local, and RFC 1918 private IPs).</p>
+              </div>
+              <div class="agent-card-footer"><span class="diagonal-arrow-btn">🔒 Guarded</span></div>
+            </article>
+            <article class="agent-card" style="min-height: 180px;">
+              <div>
+                <span class="agent-pill agent-DOCKER">DOCKER AGENT</span>
+                <h3 class="agent-name" style="margin-top: 10px;">Isolated Sandbox Execution</h3>
+                <p class="agent-desc">Allowed Tools: <code>docker.run</code> with strict resource limits (512MB RAM, 1.0 CPU, disabled networking <code>--network none</code>) and sandboxed host process fallback.</p>
+              </div>
+              <div class="agent-card-footer"><span class="diagonal-arrow-btn">🐳 Sandboxed</span></div>
+            </article>
+            <article class="agent-card" style="min-height: 180px;">
+              <div>
+                <span class="agent-pill agent-DATA_FILE">DATA & FILE AGENT</span>
+                <h3 class="agent-name" style="margin-top: 10px;">Workspace Artifacts & Layout</h3>
+                <p class="agent-desc">Allowed Tools: <code>file</code>, <code>file.write</code>, <code>pdf.generate</code>. Produces verified multi-page PDFs with block layout engines and structured JSON datasets.</p>
+              </div>
+              <div class="agent-card-footer"><span class="diagonal-arrow-btn">📁 Verified</span></div>
+            </article>
+            <article class="agent-card" style="min-height: 180px;">
+              <div>
+                <span class="agent-pill agent-REPORT">REPORT AGENT</span>
+                <h3 class="agent-name" style="margin-top: 10px;">Executive Incident Reports</h3>
+                <p class="agent-desc">Allowed Tools: <code>file</code>, <code>file.write</code>. Compiles final root cause analysis, timeline, remediation recommendations in structured Markdown.</p>
+              </div>
+              <div class="agent-card-footer"><span class="diagonal-arrow-btn">📄 Formatted</span></div>
+            </article>
+          </div>
+        </div>
+      </div>
+      </div>
+
+      <!-- Bottom Full-Width Current Mission Card -->
+      <section class="current-mission-card">
+        <div class="mission-top-row">
+          <div class="mission-label-wrap">
+            <span class="mission-ring-dot"></span>
+            <h2 class="mission-section-title">Current Mission</h2>
+          </div>
+          <span class="in-progress-badge" id="currentMissionBadge">Ready</span>
+        </div>
+
+        <div class="mission-main-row">
+          <!-- 68% Circular Progress Ring -->
+          <div class="progress-donut">
+            <svg viewBox="0 0 58 58">
+              <circle cx="29" cy="29" r="25" fill="none" stroke="#E2DBD2" stroke-width="3.5" />
+              <circle id="missionRingCircle" cx="29" cy="29" r="25" fill="none" stroke="#1D1C1A" stroke-width="3.5"
+                stroke-linecap="round" stroke-dasharray="157.08" stroke-dashoffset="50.27" />
+            </svg>
+            <span class="progress-percent" id="missionPercentText">68%</span>
+          </div>
+
+          <!-- Mission Details + Linear Progress -->
+          <div class="mission-details">
+            <div class="mission-heading" id="currentMissionHeading">MCI Ready for Mission Deployment</div>
+            <p class="mission-subtext" id="currentMissionSubtext">Click "Start a Mission" to launch autonomous multi-agent task execution.</p>
+            <div class="linear-progress-track">
+              <div class="linear-progress-fill" id="missionLinearFill"></div>
+            </div>
+          </div>
+
+          <span class="mission-divider"></span>
+
+          <button class="btn-view-details" id="viewDetailsBtn">
+            View Details <span>→</span>
+          </button>
+        </div>
+
+        <!-- Live Output Files & Artifacts Shelf -->
+        <div class="mission-artifacts-bar" id="currentMissionArtifactsBar" style="display: none;">
+          <div class="mission-artifacts-label">
+            <span>📁</span>
+            <span>Mission Output Files &amp; Results:</span>
+          </div>
+          <div class="mission-artifacts-chips" id="currentMissionArtifactsChips">
+            <!-- Dynamically populated file chips -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Mission Output Files & Results Section on Dashboard -->
+      <section class="section-page-card" id="dashboardArtifactsSection" style="margin-top: 24px;">
+        <div class="section-page-header" style="margin-bottom: 16px;">
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span class="status-dot"></span>
+              <h2 class="card-serif-title" style="font-size: 19px;">Output Files &amp; Results Explorer</h2>
+            </div>
+            <p class="mci-modal-subtitle">Click any generated file to inspect, read, and verify its content directly on the web</p>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn-secondary" style="font-size: 12px; padding: 6px 14px;" onclick="refreshDashboardArtifacts()">
+              ↻ Refresh Files
+            </button>
+            <button class="btn-primary" style="font-size: 12px; padding: 6px 14px; display: none;" id="quickOpenReportBtn" onclick="quickViewReport()">
+              📄 Read Report.md
+            </button>
+            <button class="btn-primary" style="font-size: 12px; padding: 6px 14px; display: none; background: #922B21; border-color: #922B21;" id="quickOpenPdfBtn" onclick="quickViewPdf()">
+              📑 Open Results.pdf
+            </button>
+          </div>
+        </div>
+
+        <div class="artifacts-grid" id="dashboardArtifactsGrid">
+          <p style="color: var(--text-muted); text-align: center; padding: 28px; grid-column: 1 / -1;">
+            No output files generated yet. Start a mission above to produce results.
+          </p>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+
+  <!-- ================= MODALS ================= -->
+
+  <!-- Modal 3: Interactive Web File & Result Viewer -->
+  <div class="mci-modal-backdrop" id="fileViewerModal">
+    <div class="mci-modal-card" style="max-width: 1080px; width: 95vw; height: 90vh;">
+      <div class="mci-modal-header" style="padding: 16px 24px;">
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <div id="fileViewerIcon" style="font-size: 26px; width: 44px; height: 44px; border-radius: 10px; background: var(--bg-status-pill); display: flex; align-items: center; justify-content: center;">📄</div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <h2 class="mci-modal-title" id="fileViewerFileName" style="font-size: 18px;">results.pdf</h2>
+              <span class="agent-pill agent-DATA_FILE" id="fileViewerAgentPill">DATA_FILE</span>
+              <span class="status-badge-inline status-DONE" id="fileViewerSizeBadge">0 KB</span>
+            </div>
+            <p class="mci-modal-subtitle" id="fileViewerSubtext">Generated output file</p>
+          </div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <button class="btn-secondary" id="fileViewerToggleFormatBtn" style="font-size: 12px; padding: 6px 12px; display: none;" onclick="toggleMarkdownFormat()">
+            Toggle Raw / Rendered
+          </button>
+          <button class="btn-secondary" id="fileViewerCopyBtn" style="font-size: 12px; padding: 6px 12px; display: none;" onclick="copyViewerContent()">
+            📋 Copy
+          </button>
+          <a id="fileViewerOpenTabBtn" href="#" target="_blank" class="btn-secondary" style="text-decoration: none; font-size: 12px; padding: 6px 12px; display: flex; align-items: center; gap: 4px;">
+            Open in New Tab ↗
+          </a>
+          <a id="fileViewerDownloadBtn" href="#" class="btn-primary" style="text-decoration: none; font-size: 12px; padding: 6px 14px; display: flex; align-items: center; gap: 4px;" download>
+            ⬇ Download
+          </a>
+          <button class="mci-modal-close" onclick="closeFileViewer()">&times;</button>
+        </div>
+      </div>
+
+      <div class="mci-modal-body" id="fileViewerBody" style="padding: 0; background: #FAF7F4; position: relative; overflow-y: auto;">
+        <!-- Embedded PDF iframe OR Rendered Markdown OR Monospace Code View -->
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Modal 1: Launch Mission -->
+  <div class="mci-modal-backdrop" id="launchMissionModal">
+    <div class="mci-modal-card">
+      <div class="mci-modal-header">
+        <div>
+          <h2 class="mci-modal-title">Launch Autonomous Mission</h2>
+          <p class="mci-modal-subtitle">Multi-Agent Intelligence System will plan, schedule, and resolve this objective.</p>
+        </div>
+        <button class="mci-modal-close" onclick="closeStartMissionModal()">&times;</button>
+      </div>
+
+      <div class="mci-modal-body">
+        <label class="mci-input-label" for="missionObjectiveInput">Mission Objective</label>
+        <textarea id="missionObjectiveInput" class="mci-textarea"
+          placeholder="E.g. Investigate Wikipedia page on Artificial Intelligence and generate data and PDF report..."></textarea>
+
+        <div class="mci-presets-group">
+          <div class="mci-presets-label">Or choose a recommended scenario:</div>
+          <div class="mci-presets-chips">
+            <button class="mci-chip" onclick="applyPreset('Investigate Wikipedia page on Artificial Intelligence and generate data and PDF report')">
+              🌐 Wikipedia + PDF Report
+            </button>
+            <button class="mci-chip" onclick="applyPreset('Run Python Docker container to calculate primes up to 1000 and verify output')">
+              🐳 Docker Math Sandbox
+            </button>
+            <button class="mci-chip" onclick="applyPreset('Collect machine metrics, save JSON dataset, and generate comprehensive incident report')">
+              📁 Data Aggregation & JSON
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="mci-modal-footer">
+        <button class="btn-secondary" onclick="closeStartMissionModal()">Cancel</button>
+        <button class="btn-primary" id="confirmLaunchBtn" onclick="submitMission()">
+          <svg width="10" height="11" viewBox="0 0 10 11" fill="currentColor">
+            <polygon points="1,0.5 9.5,5.5 1,10.5" />
+          </svg>
+          Deploy Mission
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 2: Mission Details & Audit Drawer -->
+  <div class="mci-modal-backdrop" id="missionDetailsModal">
+    <div class="mci-modal-card wide">
+      <div class="mci-modal-header">
+        <div>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <h2 class="mci-modal-title" id="modalMissionTitle">Mission Details</h2>
+            <span class="status-badge-inline status-RUNNING" id="modalMissionStatusBadge">RUNNING</span>
+          </div>
+          <p class="mci-modal-subtitle" id="modalMissionObjective">Loading objective...</p>
+        </div>
+        <button class="mci-modal-close" onclick="closeDetailsModal()">&times;</button>
+      </div>
+
+      <!-- Modal Tabs Header -->
+      <div class="mci-tabs-header">
+        <button class="mci-tab-btn active" data-tab="tabSubtasks" onclick="switchModalTab('tabSubtasks')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 11 12 14 22 4" />
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+          </svg>
+          Subtasks Plan (<span id="modalSubtasksCount">0</span>)
+        </button>
+        <button class="mci-tab-btn" data-tab="tabAudit" onclick="switchModalTab('tabAudit')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+          Security Audit Log (<span id="modalAuditCount">0</span>)
+        </button>
+        <button class="mci-tab-btn" data-tab="tabArtifacts" onclick="switchModalTab('tabArtifacts')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+          </svg>
+          Artifacts &amp; Files (<span id="modalArtifactsCount">0</span>)
+        </button>
+        <button class="mci-tab-btn" data-tab="tabReport" onclick="switchModalTab('tabReport')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+          </svg>
+          Executive Report
+        </button>
+      </div>
+
+      <div class="mci-modal-body">
+        <!-- Tab 1: Subtasks -->
+        <div class="mci-tab-pane active" id="tabSubtasks">
+          <div class="subtasks-list" id="modalSubtasksList">
+            <p style="color: var(--text-muted); text-align: center; padding: 20px;">No subtasks recorded yet.</p>
+          </div>
+        </div>
+
+        <!-- Tab 2: Security Audit Log -->
+        <div class="mci-tab-pane" id="tabAudit">
+          <div class="audit-filters">
+            <button class="audit-filter-pill active" onclick="filterModalAudit('ALL')">All Checks</button>
+            <button class="audit-filter-pill" onclick="filterModalAudit('ALLOWED')">Allowed Only</button>
+            <button class="audit-filter-pill" onclick="filterModalAudit('DENIED')">Denied Only</button>
+          </div>
+          <div class="audit-table-wrap">
+            <table class="audit-table">
+              <thead>
+                <tr>
+                  <th>Agent</th>
+                  <th>Tool</th>
+                  <th>Decision</th>
+                  <th>Reason / Details</th>
+                  <th>Time</th>
+                </tr>
+              </thead>
+              <tbody id="modalAuditTableBody">
+                <tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 18px;">No gateway checks recorded yet.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Tab 3: Artifacts -->
+        <div class="mci-tab-pane" id="tabArtifacts">
+          <div class="artifacts-grid" id="modalArtifactsGrid">
+            <p style="color: var(--text-muted); text-align: center; padding: 20px; grid-column: 1 / -1;">No artifacts produced yet.</p>
+          </div>
+        </div>
+
+        <!-- Tab 4: Report -->
+        <div class="mci-tab-pane" id="tabReport">
+          <div style="display: flex; justify-content: flex-end; margin-bottom: 12px;">
+            <button class="btn-secondary" style="font-size: 12px; padding: 6px 14px;" id="downloadReportBtn" onclick="downloadCurrentReport()">
+              ⬇ Download report.md
+            </button>
+          </div>
+          <div class="markdown-rendered" id="modalReportContent">
+            <em>Report is still being generated by the Report Agent...</em>
+          </div>
+        </div>
+      </div>
+
+      <div class="mci-modal-footer">
+        <button class="btn-secondary" onclick="closeDetailsModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    // Configuration: Seamlessly switch between relative API and direct backend port 8080
+    const API_BASE = window.location.origin.includes(':8080')
+      ? '/api'
+      : (window.location.protocol === 'file:' || window.location.origin.includes(':5173') ? 'http://localhost:8080/api' : '/api');
+
+    let currentRunId = null;
+    let activeEventSource = null;
+    let allRunsCache = [];
+    let currentModalAuditEntries = [];
+    let currentGlobalAuditEntries = [];
+    let currentViewingMarkdownRaw = "";
+    let isMarkdownRenderedView = true;
+    let currentViewingRawText = "";
+
+    // ================= 1. PAGE NAVIGATION & TABS =================
+    const navItems = document.querySelectorAll('#sidebarNav .nav-item');
+    navItems.forEach((item) => {
+      item.addEventListener('click', (e) => {
+        e.preventDefault();
+        navItems.forEach((el) => el.classList.remove('active'));
+        item.classList.add('active');
+
+        const link = item.querySelector('a');
+        const href = link ? link.getAttribute('href') : '#overview';
+        switchView(href.replace('#', ''));
+      });
+    });
+
+    function switchView(viewName) {
+      document.querySelectorAll('.page-view').forEach(v => v.classList.add('hidden'));
+
+      if (viewName === 'missions' || viewName === 'runs') {
+        const view = document.getElementById('viewMissions');
+        if (view) view.classList.remove('hidden');
+        loadMissionsView();
+      } else if (viewName === 'logs') {
+        const view = document.getElementById('viewLogs');
+        if (view) view.classList.remove('hidden');
+        loadGlobalLogsView();
+      } else if (viewName === 'agents') {
+        const view = document.getElementById('viewAgents');
+        if (view) view.classList.remove('hidden');
+      } else {
+        const view = document.getElementById('viewDashboard');
+        if (view) view.classList.remove('hidden');
+        if (currentRunId) {
+          loadDashboardArtifacts(currentRunId);
+        }
+      }
+    }
+
+    document.getElementById('viewAllLogsLink').addEventListener('click', (e) => {
+      e.preventDefault();
+      navItems.forEach((el) => el.classList.remove('active'));
+      const logNav = Array.from(navItems).find(i => i.querySelector('a[href="#logs"]'));
+      if (logNav) logNav.classList.add('active');
+      switchView('logs');
+    });
+
+    // ================= 2. MODAL CONTROLS =================
+    const launchModal = document.getElementById('launchMissionModal');
+    const detailsModal = document.getElementById('missionDetailsModal');
+    const fileModal = document.getElementById('fileViewerModal');
+
+    function openStartMissionModal() {
+      launchModal.classList.add('open');
+      const input = document.getElementById('missionObjectiveInput');
+      if (input) {
+        input.focus();
+      }
+    }
+
+    function closeStartMissionModal() {
+      launchModal.classList.remove('open');
+    }
+
+    function openDetailsModal(runId) {
+      const targetId = runId || currentRunId;
+      if (!targetId) return;
+      loadRunDetailsIntoModal(targetId);
+      detailsModal.classList.add('open');
+    }
+
+    function closeDetailsModal() {
+      detailsModal.classList.remove('open');
+    }
+
+    function applyPreset(text) {
+      document.getElementById('missionObjectiveInput').value = text;
+    }
+
+    document.getElementById('startMissionBtn').addEventListener('click', () => {
+      openStartMissionModal();
+    });
+
+    document.getElementById('viewDetailsBtn').addEventListener('click', () => {
+      if (currentRunId) {
+        openDetailsModal(currentRunId);
+      } else if (allRunsCache.length > 0) {
+        openDetailsModal(allRunsCache[0].id);
+      } else {
+        openStartMissionModal();
+      }
+    });
+
+    // Close on backdrop click
+    [launchModal, detailsModal, fileModal].forEach(modal => {
+      if (!modal) return;
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.classList.remove('open');
+        }
+      });
+    });
+
+    // Modal Tabs
+    function switchModalTab(tabId) {
+      document.querySelectorAll('.mci-tabs-header .mci-tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-tab') === tabId);
+      });
+      document.querySelectorAll('.mci-tab-pane').forEach(pane => {
+        pane.classList.toggle('active', pane.id === tabId);
+      });
+    }
+
+    // ================= 3. SYSTEM STATS & KPI =================
+    async function fetchSystemStats() {
+      try {
+        const res = await fetch(`${API_BASE}/system/stats`);
+        if (!res.ok) return;
+        const stats = await res.json();
+        document.getElementById('kpiTasksResolved').textContent = stats.tasksResolved;
+        document.getElementById('kpiAgentsActive').textContent = String(stats.agentsActive).padStart(2, '0');
+        document.getElementById('kpiSuccessRate').textContent = stats.successRate;
+      } catch (err) {
+        console.warn('System stats unavailable:', err);
+      }
+    }
+
+    // ================= 4. MISSION SUBMISSION & SSE =================
+    async function submitMission() {
+      const input = document.getElementById('missionObjectiveInput');
+      const objective = input.value.trim();
+      if (!objective) {
+        input.focus();
+        return;
+      }
+
+      const launchBtn = document.getElementById('confirmLaunchBtn');
+      launchBtn.disabled = true;
+      launchBtn.textContent = 'Deploying...';
+
+      try {
+        const res = await fetch(`${API_BASE}/runs`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ objective: objective })
+        });
+
+        if (!res.ok) throw new Error('Failed to start run: ' + res.status);
+        const data = await res.json();
+        const runId = data.runId || data.id;
+
+        closeStartMissionModal();
+        input.value = '';
+
+        // Switch to dashboard and activate live monitoring
+        switchView('overview');
+        navItems.forEach(el => el.classList.remove('active'));
+        navItems[0].classList.add('active');
+
+        currentRunId = runId;
+        updateCurrentMissionCard({
+          id: runId,
+          objective: objective,
+          status: 'RUNNING'
+        }, 0);
+
+        // Reset artifacts
+        document.getElementById('currentMissionArtifactsChips').innerHTML = '';
+        document.getElementById('currentMissionArtifactsBar').style.display = 'none';
+
+        subscribeToRun(runId);
+        fetchSystemStats();
+
+      } catch (err) {
+        alert('Could not start mission: ' + err.message);
+      } finally {
+        launchBtn.disabled = false;
+        launchBtn.innerHTML = `
+          <svg width="10" height="11" viewBox="0 0 10 11" fill="currentColor">
+            <polygon points="1,0.5 9.5,5.5 1,10.5" />
+          </svg>
+          Deploy Mission
+        `;
+      }
+    }
+
+    function subscribeToRun(runId) {
+      if (activeEventSource) {
+        activeEventSource.close();
+      }
+
+      const es = new EventSource(`${API_BASE}/runs/${runId}/events`);
+      activeEventSource = es;
+
+      es.addEventListener('connected', (e) => {
+        console.log('SSE connected for', runId);
+      });
+
+      es.addEventListener('subtask_status', (e) => {
+        try {
+          const data = JSON.parse(e.data);
+          refreshProgressForRun(runId, data);
+          loadDashboardArtifacts(runId);
+        } catch (err) {}
+      });
+
+      es.addEventListener('tool_call', (e) => {
+        try {
+          const entry = JSON.parse(e.data);
+          addTimelineEvent(entry);
+          loadDashboardArtifacts(runId);
+        } catch (err) {}
+      });
+
+      es.addEventListener('artifact_created', (e) => {
+        try {
+          const artifact = JSON.parse(e.data);
+          addArtifactNotice(artifact);
+          loadDashboardArtifacts(runId);
+        } catch (err) {}
+      });
+
+      es.addEventListener('run_status', (e) => {
+        try {
+          const data = JSON.parse(e.data);
+          if (data.status === 'DONE') {
+            setProgress(100);
+            document.getElementById('currentMissionBadge').textContent = 'Completed';
+            document.getElementById('currentMissionBadge').className = 'status-badge-inline status-DONE';
+            document.getElementById('currentMissionSubtext').textContent = 'Mission completed successfully. 100% verified.';
+          } else {
+            document.getElementById('currentMissionBadge').textContent = 'Failed';
+            document.getElementById('currentMissionBadge').className = 'status-badge-inline status-FAILED';
+            document.getElementById('currentMissionSubtext').textContent = 'Mission encountered an error during execution.';
+          }
+          fetchSystemStats();
+          loadDashboardArtifacts(runId);
+          es.close();
+        } catch (err) {}
+      });
+
+      es.onerror = () => {
+        es.close();
+      };
+    }
+
+    async function refreshProgressForRun(runId, lastSubtaskEvent) {
+      try {
+        const res = await fetch(`${API_BASE}/runs/${runId}`);
+        if (!res.ok) return;
+        const run = await res.json();
+        const subtasks = run.subtasks || [];
+        const total = subtasks.length;
+        const done = subtasks.filter(s => s.status === 'DONE').length;
+
+        const pct = total === 0 ? 10 : Math.round((done / total) * 100);
+        setProgress(pct);
+
+        if (lastSubtaskEvent && lastSubtaskEvent.description) {
+          document.getElementById('currentMissionSubtext').textContent =
+            `[${lastSubtaskEvent.agent || 'Agent'}] ${lastSubtaskEvent.description} (${lastSubtaskEvent.status})`;
+        }
+      } catch (err) {}
+    }
+
+    function setProgress(progress) {
+      const ringCircle = document.getElementById('missionRingCircle');
+      const percentText = document.getElementById('missionPercentText');
+      const linearFill = document.getElementById('missionLinearFill');
+
+      const circumference = 157.08;
+      const offset = circumference - (progress / 100) * circumference;
+      ringCircle.style.strokeDashoffset = offset.toFixed(2);
+      percentText.textContent = `${progress}%`;
+      linearFill.style.width = `${progress}%`;
+    }
+
+    function updateCurrentMissionCard(run, pct = 0) {
+      currentRunId = run.id;
+      document.getElementById('currentMissionHeading').textContent = run.objective;
+      document.getElementById('currentMissionSubtext').textContent = 'Autonomous multi-agent execution in progress...';
+      document.getElementById('currentMissionBadge').textContent = run.status;
+      document.getElementById('currentMissionBadge').className = 'status-badge-inline status-' + run.status;
+      setProgress(pct);
+      loadDashboardArtifacts(run.id);
+    }
+
+    function addTimelineEvent(entry) {
+      const list = document.getElementById('recentActivityList');
+      if (!list) return;
+
+      const li = document.createElement('li');
+      li.className = 'timeline-item';
+
+      const time = entry.ts ? entry.ts.substring(11, 16) : new Date().toTimeString().substring(0, 5);
+      const isAllowed = entry.decision === 'ALLOWED' || entry.decision === 'ALLOW';
+      const decColor = isAllowed ? '#3A8F5C' : '#E74C3C';
+      const reasonText = entry.reason ? ` — ${entry.reason}` : '';
+
+      li.innerHTML = `
+        <span class="timeline-time">${time}</span>
+        <span class="timeline-text">
+          <span style="color: ${decColor}; font-weight:600;">[${entry.agent}]</span>
+          ${entry.tool} &rarr; <span style="color: ${decColor};">${entry.decision}</span>${reasonText}
+        </span>
+      `;
+
+      list.prepend(li);
+      while (list.children.length > 8) {
+        list.removeChild(list.lastChild);
+      }
+    }
+
+    function addArtifactNotice(artifact) {
+      const list = document.getElementById('recentActivityList');
+      if (!list) return;
+
+      const li = document.createElement('li');
+      li.className = 'timeline-item';
+      const time = new Date().toTimeString().substring(0, 5);
+
+      li.innerHTML = `
+        <span class="timeline-time">${time}</span>
+        <span class="timeline-text" style="color: #632B8C;">
+          📁 <strong>Artifact Created:</strong> ${artifact.name} (${artifact.kind})
+        </span>
+      `;
+      list.prepend(li);
+    }
+
+    // ================= 5. INTERACTIVE FILE & REPORT VIEWER =================
+    async function openFileViewer(runId, fileName) {
+      const targetRunId = runId || currentRunId;
+      if (!targetRunId || !fileName) return;
+
+      const modal = document.getElementById('fileViewerModal');
+      const body = document.getElementById('fileViewerBody');
+      const fileNameEl = document.getElementById('fileViewerFileName');
+      const iconEl = document.getElementById('fileViewerIcon');
+      const pillEl = document.getElementById('fileViewerAgentPill');
+      const sizeBadgeEl = document.getElementById('fileViewerSizeBadge');
+      const subtextEl = document.getElementById('fileViewerSubtext');
+      const toggleBtn = document.getElementById('fileViewerToggleFormatBtn');
+      const copyBtn = document.getElementById('fileViewerCopyBtn');
+      const openTabBtn = document.getElementById('fileViewerOpenTabBtn');
+      const downloadBtn = document.getElementById('fileViewerDownloadBtn');
+
+      fileNameEl.textContent = fileName;
+      subtextEl.textContent = `Generated file from ${targetRunId}`;
+
+      const viewUrl = `${API_BASE}/runs/${targetRunId}/artifacts/${encodeURIComponent(fileName)}/view`;
+      const downloadUrl = `${API_BASE}/runs/${targetRunId}/artifacts/${encodeURIComponent(fileName)}/download`;
+
+      openTabBtn.href = viewUrl;
+      downloadBtn.href = downloadUrl;
+
+      // Icon & Category
+      const lower = fileName.toLowerCase();
+      let icon = '📄';
+      let agent = 'DATA_FILE';
+      if (lower.endsWith('.pdf')) {
+        icon = '📑';
+        agent = 'DATA_FILE';
+      } else if (lower.endsWith('.md')) {
+        icon = '📝';
+        agent = 'REPORT';
+      } else if (lower.endsWith('.json')) {
+        icon = '📊';
+        agent = 'DATA_FILE';
+      } else if (lower.endsWith('.py')) {
+        icon = '⚡';
+        agent = 'DOCKER';
+      } else if (lower.includes('docker') || lower.endsWith('.txt')) {
+        icon = '🐳';
+        agent = 'DOCKER';
+      }
+
+      iconEl.textContent = icon;
+      pillEl.textContent = agent;
+      pillEl.className = 'agent-pill agent-' + agent;
+
+      toggleBtn.style.display = 'none';
+      copyBtn.style.display = 'none';
+      body.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-muted);">Loading file content...</div>';
+      modal.classList.add('open');
+
+      // 1. PDF Handling
+      if (lower.endsWith('.pdf')) {
+        sizeBadgeEl.textContent = 'PDF Document';
+        body.innerHTML = `
+          <div style="height: 100%; display: flex; flex-direction: column;">
+            <div style="background: #EAE3DA; padding: 10px 24px; font-size: 12.5px; color: var(--text-secondary); display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-hairline);">
+              <span>📑 <strong>Interactive PDF Results:</strong> Generated by DataFileAgent using block-layout engine.</span>
+              <a href="${viewUrl}" target="_blank" style="color: var(--text-primary); text-decoration: underline; font-weight: 600;">Open Fullscreen ↗</a>
+            </div>
+            <iframe src="${viewUrl}" style="width: 100%; height: calc(90vh - 120px); border: none; background: #525659;"></iframe>
+          </div>
+        `;
+        return;
+      }
+
+      // 2. Fetch Text/JSON/Markdown content
+      try {
+        const res = await fetch(`${API_BASE}/runs/${targetRunId}/artifacts/${encodeURIComponent(fileName)}/content`);
+        if (!res.ok) throw new Error('Could not fetch file content');
+        const data = await res.json();
+
+        currentViewingRawText = data.content || '';
+        sizeBadgeEl.textContent = formatBytes(data.size || currentViewingRawText.length);
+        copyBtn.style.display = 'inline-flex';
+
+        if (lower.endsWith('.md')) {
+          currentViewingMarkdownRaw = currentViewingRawText;
+          isMarkdownRenderedView = true;
+          toggleBtn.style.display = 'inline-flex';
+          toggleBtn.textContent = 'Show Raw Markdown';
+          body.innerHTML = `<div class="markdown-rendered" style="border: none; border-radius: 0; min-height: 100%; padding: 28px 36px;">${renderMarkdown(currentViewingMarkdownRaw)}</div>`;
+        } else if (lower.endsWith('.json')) {
+          let formattedJson = currentViewingRawText;
+          try {
+            formattedJson = JSON.stringify(JSON.parse(currentViewingRawText), null, 2);
+          } catch (e) {}
+          body.innerHTML = `<pre class="file-code-container"><code>${escapeHtml(formattedJson)}</code></pre>`;
+        } else {
+          // Python or Plain Text
+          body.innerHTML = `<pre class="file-code-container"><code>${escapeHtml(currentViewingRawText)}</code></pre>`;
+        }
+
+      } catch (err) {
+        body.innerHTML = `<div style="padding: 40px; text-align: center; color: #C0392B;">Error loading file: ${escapeHtml(err.message)}</div>`;
+      }
+    }
+
+    function closeFileViewer() {
+      const modal = document.getElementById('fileViewerModal');
+      if (modal) modal.classList.remove('open');
+      const body = document.getElementById('fileViewerBody');
+      if (body) body.innerHTML = '';
+    }
+
+    function toggleMarkdownFormat() {
+      const body = document.getElementById('fileViewerBody');
+      const toggleBtn = document.getElementById('fileViewerToggleFormatBtn');
+      isMarkdownRenderedView = !isMarkdownRenderedView;
+
+      if (isMarkdownRenderedView) {
+        toggleBtn.textContent = 'Show Raw Markdown';
+        body.innerHTML = `<div class="markdown-rendered" style="border: none; border-radius: 0; min-height: 100%; padding: 28px 36px;">${renderMarkdown(currentViewingMarkdownRaw)}</div>`;
+      } else {
+        toggleBtn.textContent = 'Show Formatted Report';
+        body.innerHTML = `<pre class="file-code-container"><code>${escapeHtml(currentViewingMarkdownRaw)}</code></pre>`;
+      }
+    }
+
+    function copyViewerContent() {
+      if (!currentViewingRawText) return;
+      navigator.clipboard.writeText(currentViewingRawText).then(() => {
+        const copyBtn = document.getElementById('fileViewerCopyBtn');
+        copyBtn.textContent = '✓ Copied!';
+        setTimeout(() => { copyBtn.textContent = '📋 Copy'; }, 2000);
+      });
+    }
+
+    function quickViewReport() {
+      if (!currentRunId) return;
+      openFileViewer(currentRunId, 'report.md');
+    }
+
+    function quickViewPdf() {
+      if (!currentRunId) return;
+      openFileViewer(currentRunId, 'results.pdf');
+    }
+
+    function refreshDashboardArtifacts() {
+      if (currentRunId) {
+        loadDashboardArtifacts(currentRunId);
+      }
+    }
+
+    // ================= 6. LOAD ARTIFACTS ON DASHBOARD & CURRENT MISSION =================
+    async function loadDashboardArtifacts(runId) {
+      if (!runId) return;
+
+      try {
+        const res = await fetch(`${API_BASE}/runs/${runId}/artifacts`);
+        if (!res.ok) return;
+        const artifacts = await res.json();
+
+        // 1. Update Current Mission Chips Shelf
+        const chipsContainer = document.getElementById('currentMissionArtifactsChips');
+        const barContainer = document.getElementById('currentMissionArtifactsBar');
+
+        if (artifacts.length > 0) {
+          barContainer.style.display = 'flex';
+          chipsContainer.innerHTML = artifacts.map(a => {
+            const lower = a.name.toLowerCase();
+            let chipClass = 'file-chip';
+            let icon = '📁';
+            let label = a.name;
+
+            if (lower.endsWith('.pdf')) {
+              chipClass += ' chip-pdf';
+              icon = '📑';
+              label = `${a.name} (View PDF)`;
+            } else if (lower.endsWith('.md')) {
+              chipClass += ' chip-report';
+              icon = '📝';
+              label = `${a.name} (Read Report)`;
+            } else if (lower.endsWith('.json')) {
+              chipClass += ' chip-data';
+              icon = '📊';
+            } else if (lower.endsWith('.py')) {
+              chipClass += ' chip-code';
+              icon = '⚡';
+            }
+
+            return `
+              <button class="${chipClass}" onclick="openFileViewer('${runId}', '${escapeHtml(a.name)}')">
+                <span>${icon}</span>
+                <span>${escapeHtml(label)}</span>
+              </button>
+            `;
+          }).join('');
+        } else {
+          barContainer.style.display = 'none';
+        }
+
+        // 2. Update Dashboard Overview Grid
+        const grid = document.getElementById('dashboardArtifactsGrid');
+        const reportBtn = document.getElementById('quickOpenReportBtn');
+        const pdfBtn = document.getElementById('quickOpenPdfBtn');
+
+        let hasReport = false;
+        let hasPdf = false;
+
+        if (artifacts.length > 0) {
+          grid.innerHTML = artifacts.map(a => {
+            const lower = a.name.toLowerCase();
+            let icon = '📁';
+            let kindDesc = 'Output File';
+
+            if (lower.endsWith('.pdf')) {
+              icon = '📑';
+              kindDesc = 'Interactive PDF Results';
+              hasPdf = true;
+            } else if (lower.endsWith('.md')) {
+              icon = '📝';
+              kindDesc = 'Executive Summary Report';
+              hasReport = true;
+            } else if (lower.endsWith('.json')) {
+              icon = '📊';
+              kindDesc = 'Normalized JSON Dataset';
+            } else if (lower.endsWith('.py')) {
+              icon = '⚡';
+              kindDesc = 'Executable Python Script';
+            } else if (lower.endsWith('.txt')) {
+              icon = '📋';
+              kindDesc = 'Execution Output Log';
+            }
+
+            const downloadUrl = `${API_BASE}/runs/${runId}/artifacts/${encodeURIComponent(a.name)}/download`;
+            const sizeStr = a.size ? formatBytes(a.size) : 'Ready';
+
+            return `
+              <div class="artifact-card">
+                <div class="artifact-top">
+                  <div class="artifact-icon" style="font-size: 20px;">${icon}</div>
+                  <div style="flex: 1; overflow: hidden;">
+                    <div class="artifact-title" title="${escapeHtml(a.name)}">${escapeHtml(a.name)}</div>
+                    <div class="artifact-kind-pill">${kindDesc} &bull; ${sizeStr}</div>
+                  </div>
+                  <span class="agent-pill agent-${a.agent || 'DATA_FILE'}">${a.agent || 'DATA_FILE'}</span>
+                </div>
+                <div class="artifact-card-actions">
+                  <button class="btn-view-file" onclick="openFileViewer('${runId}', '${escapeHtml(a.name)}')">
+                    <span>👁️</span> View on Web
+                  </button>
+                  <a href="${downloadUrl}" class="btn-download-file" download title="Download file to computer">
+                    <span>⬇</span>
+                  </a>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+          if (reportBtn) reportBtn.style.display = hasReport ? 'inline-flex' : 'none';
+          if (pdfBtn) pdfBtn.style.display = hasPdf ? 'inline-flex' : 'none';
+
+        } else {
+          grid.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 28px; grid-column: 1 / -1;">No output files generated yet. Start a mission above to produce results.</p>';
+          if (reportBtn) reportBtn.style.display = 'none';
+          if (pdfBtn) pdfBtn.style.display = 'none';
+        }
+
+      } catch (err) {}
+    }
+
+    // ================= 7. MISSION DETAILS MODAL =================
+    async function loadRunDetailsIntoModal(runId) {
+      document.getElementById('modalMissionTitle').textContent = `Mission Details — ${runId}`;
+      document.getElementById('modalMissionObjective').textContent = 'Loading...';
+
+      try {
+        const res = await fetch(`${API_BASE}/runs/${runId}`);
+        if (!res.ok) throw new Error('Run not found');
+        const run = await res.json();
+
+        document.getElementById('modalMissionObjective').textContent = run.objective;
+        document.getElementById('modalMissionStatusBadge').textContent = run.status;
+        document.getElementById('modalMissionStatusBadge').className = 'status-badge-inline status-' + run.status;
+
+        // Render Subtasks
+        const subtasks = run.subtasks || [];
+        document.getElementById('modalSubtasksCount').textContent = subtasks.length;
+        renderModalSubtasks(subtasks);
+
+        // Fetch Audit Log
+        fetchModalAudit(runId);
+
+        // Fetch Artifacts
+        fetchModalArtifacts(runId);
+
+        // Fetch Report
+        fetchModalReport(runId);
+
+      } catch (err) {
+        document.getElementById('modalMissionObjective').textContent = 'Failed to load run: ' + err.message;
+      }
+    }
+
+    function renderModalSubtasks(subtasks) {
+      const container = document.getElementById('modalSubtasksList');
+      if (subtasks.length === 0) {
+        container.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 20px;">No subtasks created for this run.</p>';
+        return;
+      }
+
+      container.innerHTML = subtasks.map(st => {
+        const agentClass = 'agent-' + (st.agent || 'DATA_FILE');
+        const statusClass = 'status-' + (st.status || 'PENDING');
+        const outputHtml = st.result ? `<div class="subtask-output-box">${escapeHtml(st.result)}</div>` :
+                          (st.error ? `<div class="subtask-output-box" style="color: #F87171;">${escapeHtml(st.error)}</div>` : '');
+
+        return `
+          <div class="subtask-card">
+            <div class="subtask-head">
+              <span class="agent-pill ${agentClass}">${st.agent}</span>
+              <span class="status-badge-inline ${statusClass}">${st.status}</span>
+            </div>
+            <div class="subtask-desc">Step ${st.seq}: ${escapeHtml(st.description)}</div>
+            <div class="subtask-meta">
+              <span>Attempts: ${st.attempts}</span>
+              <span>Dependencies: ${st.dependsOn && st.dependsOn.length > 0 ? st.dependsOn.join(', ') : 'None'}</span>
+            </div>
+            ${outputHtml}
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function fetchModalAudit(runId) {
+      try {
+        const res = await fetch(`${API_BASE}/runs/${runId}/audit`);
+        if (!res.ok) return;
+        currentModalAuditEntries = await res.json();
+        document.getElementById('modalAuditCount').textContent = currentModalAuditEntries.length;
+        renderModalAuditTable(currentModalAuditEntries);
+      } catch (err) {}
+    }
+
+    function filterModalAudit(filter) {
+      document.querySelectorAll('#tabAudit .audit-filter-pill').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.toUpperCase().includes(filter));
+      });
+
+      if (filter === 'ALL') {
+        renderModalAuditTable(currentModalAuditEntries);
+      } else {
+        renderModalAuditTable(currentModalAuditEntries.filter(e => e.decision === filter));
+      }
+    }
+
+    function renderModalAuditTable(entries) {
+      const tbody = document.getElementById('modalAuditTableBody');
+      if (!entries || entries.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 18px;">No audit records found.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = entries.map(e => {
+        const decClass = 'decision-' + e.decision;
+        const time = e.ts ? e.ts.substring(11, 19) : '--:--:--';
+        const reason = e.reason ? escapeHtml(e.reason) : (e.args ? escapeHtml(typeof e.args === 'string' ? e.args : JSON.stringify(e.args)) : 'Permitted by policy');
+
+        return `
+          <tr>
+            <td><span class="agent-pill agent-${e.agent}">${e.agent}</span></td>
+            <td><code>${escapeHtml(e.tool)}</code></td>
+            <td><span class="${decClass}">${e.decision}</span></td>
+            <td style="max-width: 320px; word-break: break-all;">${reason}</td>
+            <td style="color: var(--text-muted); font-size: 11px;">${time}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    async function fetchModalArtifacts(runId) {
+      try {
+        const res = await fetch(`${API_BASE}/runs/${runId}/artifacts`);
+        if (!res.ok) return;
+        const artifacts = await res.json();
+        document.getElementById('modalArtifactsCount').textContent = artifacts.length;
+        renderModalArtifacts(artifacts, runId);
+      } catch (err) {}
+    }
+
+    function renderModalArtifacts(artifacts, runId) {
+      const grid = document.getElementById('modalArtifactsGrid');
+      if (!artifacts || artifacts.length === 0) {
+        grid.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 20px; grid-column: 1 / -1;">No files found in workspace folder.</p>';
+        return;
+      }
+
+      grid.innerHTML = artifacts.map(a => {
+        const lower = a.name.toLowerCase();
+        const icon = lower.endsWith('.pdf') ? '📑' : (lower.endsWith('.md') ? '📝' : (lower.endsWith('.py') ? '⚡' : (lower.endsWith('.json') ? '📊' : '📁')));
+        const downloadUrl = `${API_BASE}/runs/${runId}/artifacts/${encodeURIComponent(a.name)}/download`;
+        const sizeStr = a.size ? formatBytes(a.size) : a.kind;
+
+        return `
+          <div class="artifact-card">
+            <div class="artifact-top">
+              <div class="artifact-icon">${icon}</div>
+              <div style="flex: 1; overflow: hidden;">
+                <div class="artifact-title">${escapeHtml(a.name)}</div>
+                <div class="artifact-kind-pill">${sizeStr} &bull; ${a.agent || 'DATA_FILE'}</div>
+              </div>
+            </div>
+            <div class="artifact-card-actions">
+              <button class="btn-view-file" onclick="openFileViewer('${runId}', '${escapeHtml(a.name)}')">
+                <span>👁️</span> View on Web
+              </button>
+              <a href="${downloadUrl}" class="btn-download-file" download title="Download">
+                <span>⬇</span>
+              </a>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function fetchModalReport(runId) {
+      const container = document.getElementById('modalReportContent');
+      try {
+        const res = await fetch(`${API_BASE}/runs/${runId}/report`);
+        if (!res.ok) {
+          container.innerHTML = '<em>Report is not yet generated or available.</em>';
+          return;
+        }
+        const data = await res.json();
+        container.innerHTML = renderMarkdown(data.markdown || '');
+      } catch (err) {
+        container.innerHTML = '<em>Failed to load report.</em>';
+      }
+    }
+
+    function downloadCurrentReport() {
+      if (!currentRunId) return;
+      window.location.href = `${API_BASE}/runs/${currentRunId}/artifacts/report.md/download`;
+    }
+
+    // ================= 8. MISSIONS HISTORY VIEW =================
+    async function loadMissionsView() {
+      const tbody = document.getElementById('missionsTableBody');
+      try {
+        const res = await fetch(`${API_BASE}/runs`);
+        if (!res.ok) throw new Error();
+        allRunsCache = await res.json();
+
+        if (allRunsCache.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 24px; color: var(--text-muted);">No missions found. Click "Start New Mission" above.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = allRunsCache.map(r => {
+          const subCount = r.subtasks ? r.subtasks.length : 0;
+          const created = r.createdAt ? r.createdAt.substring(0, 16).replace('T', ' ') : '--';
+
+          return `
+            <tr>
+              <td><strong>${r.id}</strong></td>
+              <td style="max-width: 320px; font-weight: 500;">${escapeHtml(r.objective)}</td>
+              <td><span class="status-badge-inline status-${r.status}">${r.status}</span></td>
+              <td>${subCount} steps</td>
+              <td style="color: var(--text-muted); font-size: 11.5px;">${created}</td>
+              <td style="display: flex; gap: 6px;">
+                <button class="btn-primary" style="font-size: 11px; padding: 5px 10px;" onclick="viewRunOutputs('${r.id}')">
+                  📁 Files
+                </button>
+                <button class="btn-secondary" style="font-size: 11px; padding: 5px 10px;" onclick="openDetailsModal('${r.id}')">
+                  Inspect &rarr;
+                </button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+      } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 24px; color: var(--text-muted);">Failed to load missions history.</td></tr>';
+      }
+    }
+
+    function viewRunOutputs(runId) {
+      currentRunId = runId;
+      switchView('overview');
+      loadDashboardArtifacts(runId);
+      const artSection = document.getElementById('dashboardArtifactsSection');
+      if (artSection) artSection.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // ================= 9. GLOBAL AUDIT LOG VIEW =================
+    async function loadGlobalLogsView() {
+      const tbody = document.getElementById('globalLogsTableBody');
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 24px; color: var(--text-muted);">Loading system audit trail...</td></tr>';
+
+      try {
+        const runsRes = await fetch(`${API_BASE}/runs`);
+        if (!runsRes.ok) throw new Error();
+        const runs = await runsRes.json();
+
+        let allAudit = [];
+        for (const run of runs.slice(0, 5)) {
+          try {
+            const aRes = await fetch(`${API_BASE}/runs/${run.id}/audit`);
+            if (aRes.ok) {
+              const entries = await aRes.json();
+              allAudit.push(...entries);
+            }
+          } catch (e) {}
+        }
+
+        currentGlobalAuditEntries = allAudit;
+        renderGlobalAuditTable(allAudit);
+
+      } catch (err) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 24px; color: var(--text-muted);">Failed to load audit logs.</td></tr>';
+      }
+    }
+
+    function filterGlobalLogs(filter) {
+      document.querySelectorAll('#viewLogs .audit-filter-pill').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.toUpperCase().includes(filter));
+      });
+
+      if (filter === 'ALL') {
+        renderGlobalAuditTable(currentGlobalAuditEntries);
+      } else {
+        renderGlobalAuditTable(currentGlobalAuditEntries.filter(e => e.decision === filter));
+      }
+    }
+
+    function renderGlobalAuditTable(entries) {
+      const tbody = document.getElementById('globalLogsTableBody');
+      if (!entries || entries.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 24px; color: var(--text-muted);">No audit events recorded.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = entries.map(e => {
+        const decClass = 'decision-' + e.decision;
+        const time = e.ts ? e.ts.substring(0, 19).replace('T', ' ') : '--';
+        const reason = e.reason ? escapeHtml(e.reason) : (e.args ? escapeHtml(typeof e.args === 'string' ? e.args : JSON.stringify(e.args)) : 'Permitted');
+
+        return `
+          <tr>
+            <td>#${e.id}</td>
+            <td><strong>${e.runId}</strong></td>
+            <td><span class="agent-pill agent-${e.agent}">${e.agent}</span></td>
+            <td><code>${escapeHtml(e.tool)}</code></td>
+            <td><span class="${decClass}">${e.decision}</span></td>
+            <td style="max-width: 320px; word-break: break-all;">${reason}</td>
+            <td style="color: var(--text-muted); font-size: 11px;">${time}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // ================= 10. UTILITIES (Markdown & Formatting) =================
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function formatBytes(bytes, decimals = 1) {
+      if (!bytes || bytes === 0) return '0 B';
+      const k = 1024;
+      const dm = decimals < 0 ? 0 : decimals;
+      const sizes = ['B', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    }
+
+    function renderMarkdown(md) {
+      if (!md) return '';
+      let html = escapeHtml(md);
+
+      // Headers
+      html = html.replace(/^### (.*$)/gim, '<h3 style="font-family: var(--font-serif); font-size: 17px; margin: 18px 0 8px; color: var(--text-primary);">$1</h3>');
+      html = html.replace(/^## (.*$)/gim, '<h2 style="font-family: var(--font-serif); font-size: 20px; margin: 22px 0 10px; color: var(--text-primary); border-bottom: 1px solid var(--border-hairline); padding-bottom: 6px;">$1</h2>');
+      html = html.replace(/^# (.*$)/gim, '<h1 style="font-family: var(--font-serif); font-size: 24px; margin: 26px 0 14px; color: var(--text-primary);">$1</h1>');
+
+      // Bold & Italic
+      html = html.replace(/\*\*(.*?)\*\*/gim, '<strong style="font-weight: 700; color: var(--text-primary);">$1</strong>');
+      html = html.replace(/\*(.*?)\*/gim, '<em>$1</em>');
+
+      // Code blocks
+      html = html.replace(/```([\s\S]*?)```/gim, '<pre style="background: #1C1B19; color: #E6E1DA; padding: 14px 18px; border-radius: 8px; overflow-x: auto; margin: 14px 0; font-family: monospace; font-size: 12.5px;"><code>$1</code></pre>');
+      html = html.replace(/`([^`]+)`/gim, '<code style="background: #EDE7E0; padding: 2px 6px; border-radius: 4px; font-family: monospace; font-size: 12.5px;">$1</code>');
+
+      // Bullet lists
+      html = html.replace(/^\s*[-*]\s+(.*$)/gim, '<li style="margin-bottom: 6px; line-height: 1.5;">$1</li>');
+      html = html.replace(/(<li[\s\S]*?<\/li>)/gim, '<ul style="margin: 12px 0 14px 22px;">$1</ul>');
+
+      // Paragraphs
+      html = html.replace(/\n\n+/g, '</p><p style="margin-bottom: 14px; line-height: 1.65; color: var(--text-secondary); font-size: 14px;">');
+      html = '<p style="margin-bottom: 14px; line-height: 1.65; color: var(--text-secondary); font-size: 14px;">' + html + '</p>';
+      html = html.replace(/<p[^>]*>\s*<\/p>/g, '');
+      html = html.replace(/<p[^>]*>(<h[1-3][\s\S]*?<\/h[1-3]>)<\/p>/g, '$1');
+      html = html.replace(/<p[^>]*>(<ul[\s\S]*?<\/ul>)<\/p>/g, '$1');
+      html = html.replace(/<p[^>]*>(<pre[\s\S]*?<\/pre>)<\/p>/g, '$1');
+
+      return html;
+    }
+
+    // ================= 11. INITIAL BOOTSTRAP =================
+    window.addEventListener('DOMContentLoaded', async () => {
+      fetchSystemStats();
+
+      // Check for latest run to display on Current Mission card and Artifacts Section
+      try {
+        const res = await fetch(`${API_BASE}/runs`);
+        if (res.ok) {
+          const runs = await res.json();
+          allRunsCache = runs;
+          if (runs.length > 0) {
+            const latest = runs[0];
+            currentRunId = latest.id;
+            const subtasks = latest.subtasks || [];
+            const done = subtasks.filter(s => s.status === 'DONE').length;
+            const pct = subtasks.length === 0 ? (latest.status === 'DONE' ? 100 : 0) : Math.round((done / subtasks.length) * 100);
+
+            updateCurrentMissionCard(latest, pct);
+            loadDashboardArtifacts(latest.id);
+
+            // Populate Recent Activity with real audit log entries
+            const auditRes = await fetch(`${API_BASE}/runs/${latest.id}/audit`);
+            if (auditRes.ok) {
+              const audit = await auditRes.json();
+              audit.slice(-4).reverse().forEach(entry => addTimelineEvent(entry));
+            }
+
+            // If the latest run is still running, subscribe to SSE
+            if (latest.status === 'RUNNING') {
+              subscribeToRun(latest.id);
+            }
+          }
+        }
+      } catch (err) {}
+    });
+  </script>
+
+</body>
+
+</html>

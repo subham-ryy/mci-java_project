@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MCI System - Architecture & Team Explanation Guide</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 20mm 15mm 20mm 15mm;
+            @bottom-right {
+                content: counter(page);
+                font-size: 9pt;
+                color: #64748b;
+            }
+            @bottom-left {
+                content: "Multi-Agent Computer Intelligence System (MCI)";
+                font-size: 9pt;
+                color: #64748b;
+            }
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: #1e293b;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            font-size: 10.5pt;
+        }
+
+        /* Cover Page (Print-safe, no flex, no vh) */
+        .cover-page {
+            page-break-after: always;
+            break-after: page;
+            margin: 0;
+            padding: 30px 10px 20px 10px;
+        }
+
+        .cover-header {
+            border-bottom: 4px solid #2563eb;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #dbeafe;
+            color: #1e40af;
+            font-size: 9pt;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 15px;
+        }
+
+        .cover-title {
+            font-size: 24pt;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 0 0 10px 0;
+            line-height: 1.25;
+        }
+
+        .cover-subtitle {
+            font-size: 13pt;
+            color: #475569;
+            margin: 0;
+            font-weight: 400;
+        }
+
+        .cover-body {
+            margin: 30px 0 40px 0;
+            background: #f8fafc;
+            border-left: 4px solid #2563eb;
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .cover-body p {
+            margin: 8px 0;
+            color: #334155;
+            font-size: 10.5pt;
+            line-height: 1.5;
+        }
+
+        .cover-footer {
+            border-top: 1px solid #cbd5e1;
+            padding-top: 20px;
+            margin-top: 50px;
+        }
+
+        .cover-footer table {
+            width: 100%;
+            border: none;
+            margin: 0;
+        }
+
+        .cover-footer td {
+            border: none;
+            padding: 0;
+            font-size: 9.5pt;
+            color: #64748b;
+            background: transparent;
+        }
+
+        /* Typography & Layout */
+        h1 {
+            color: #0f172a;
+            font-size: 18pt;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 8px;
+            margin-top: 0;
+            margin-bottom: 16px;
+            page-break-before: always;
+            break-before: page;
+        }
+
+        .section-page {
+            page-break-before: always;
+            break-before: page;
+            padding-top: 10px;
+        }
+
+        h2 {
+            color: #1e40af;
+            font-size: 14pt;
+            margin-top: 22px;
+            margin-bottom: 10px;
+        }
+
+        h3 {
+            color: #0f172a;
+            font-size: 11.5pt;
+            margin-top: 16px;
+            margin-bottom: 6px;
+        }
+
+        p {
+            margin-top: 0;
+            margin-bottom: 12px;
+            text-align: justify;
+        }
+
+        ul, ol {
+            margin-top: 0;
+            margin-bottom: 12px;
+            padding-left: 22px;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        /* Callout Boxes */
+        .callout {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin: 14px 0;
+            font-size: 10pt;
+        }
+
+        .callout-info {
+            background-color: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            color: #1e3a8a;
+        }
+
+        .callout-success {
+            background-color: #f0fdf4;
+            border-left: 4px solid #22c55e;
+            color: #14532d;
+        }
+
+        .callout-warning {
+            background-color: #fefce8;
+            border-left: 4px solid #eab308;
+            color: #713f12;
+        }
+
+        .callout-security {
+            background-color: #fdf2f8;
+            border-left: 4px solid #ec4899;
+            color: #831843;
+        }
+
+        .callout-title {
+            font-weight: 700;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            font-size: 9.5pt;
+        }
+
+        th, td {
+            border: 1px solid #cbd5e1;
+            padding: 8px 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f1f5f9;
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8fafc;
+        }
+
+        /* Code snippets */
+        code {
+            font-family: "Courier New", Courier, monospace;
+            background-color: #f1f5f9;
+            color: #0f172a;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-size: 9pt;
+        }
+
+        pre {
+            background-color: #0f172a;
+            color: #f8fafc;
+            padding: 12px 14px;
+            border-radius: 6px;
+            font-size: 8.5pt;
+            font-family: "Courier New", Courier, monospace;
+            overflow-x: auto;
+            margin: 12px 0;
+            line-height: 1.4;
+        }
+
+        /* Diagrams */
+        .diagram-box {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 14px;
+            margin: 16px 0;
+            text-align: center;
+        }
+
+        .flow-step {
+            display: inline-block;
+            background: #e0f2fe;
+            border: 1px solid #0284c7;
+            color: #0369a1;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 9pt;
+            margin: 4px;
+        }
+
+        .flow-arrow {
+            display: inline-block;
+            color: #64748b;
+            font-size: 12pt;
+            font-weight: bold;
+            margin: 0 4px;
+        }
+
+        /* Q&A section styling */
+        .qa-item {
+            margin-bottom: 16px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 12px 14px;
+        }
+
+        .qa-question {
+            font-weight: 700;
+            color: #1e3a8a;
+            margin-bottom: 6px;
+            font-size: 10.5pt;
+        }
+
+        .qa-answer {
+            color: #334155;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- COVER PAGE -->
+    <div class="cover-page">
+        <div class="cover-header">
+            <span class="badge">College Coursework &bull; 2nd Year Project</span>
+            <h1 class="cover-title" style="margin: 0; border: none; padding: 0;">Multi-Agent Computer Intelligence (MCI) System</h1>
+            <p class="cover-subtitle">Complete Architecture, Core Concepts, and 30% Milestone Evaluation Guide</p>
+        </div>
+
+        <div class="cover-body">
+            <p><strong>Project Purpose:</strong> An autonomous multi-agent task execution system built in pure Java that decomposes user goals into structured subtasks, coordinates specialized AI agents, and enforces security through a centralized gateway and audit ledger.</p>
+            <p><strong>Evaluation Milestone:</strong> 30% Working Functional Core (Interactive CLI, SQLite Persistence, Gemini LLM Integration, Dynamic Planning, Sequential Scheduler, Security Tool Gateway).</p>
+            <p><strong>Target Audience:</strong> Team Members, Peer Explanations, and Course Instructor / Viva Evaluation.</p>
+        </div>
+
+        <div class="cover-footer">
+            <table>
+                <tr>
+                    <td style="text-align: left; vertical-align: top; width: 62%;">
+                        <strong>Language:</strong> Java 21+ &bull; <strong>Build:</strong> Maven Multi-Module<br>
+                        <strong>Database:</strong> SQLite 3 (JDBC) &bull; <strong>AI Framework:</strong> LangChain4j + Google Gemini
+                    </td>
+                    <td style="text-align: right; vertical-align: top; width: 38%;">
+                        <strong>Date:</strong> October 2026<br>
+                        <strong>Status:</strong> Working Demo Ready
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- SECTION 1 (Starts cleanly on Page 2) -->
+    <div class="section-page">
+        <h1>1. Plain-English Overview (For Beginners)</h1>
+    
+    <h2>1.1 What is the MCI System?</h2>
+    <p>
+        Imagine you are the manager of a company. A client walks in and says: <em>"Research the latest news on artificial intelligence and give me a summary report."</em> As the manager, you don't do all the work yourself in a panic. Instead, you follow a structured process:
+    </p>
+    <ol>
+        <li><strong>You break the big job into smaller steps:</strong> Step 1 (Search data), Step 2 (Analyze), Step 3 (Write document).</li>
+        <li><strong>You assign each step to a specialist:</strong> The researcher gathers data; the technical writer formats the report.</li>
+        <li><strong>You have a security guard at the door:</strong> No employee can access files or write to the file cabinet without permission and without signing an audit register.</li>
+        <li><strong>You log everything in a ledger book:</strong> Every task, status, file created, and security decision is recorded so you can inspect it anytime.</li>
+    </ol>
+    <p>
+        <strong>The MCI System is exactly that office, implemented entirely in Java code!</strong>
+    </p>
+
+    <div class="callout callout-info">
+        <div class="callout-title">The Real-World Analogy at a Glance</div>
+        <ul>
+            <li><strong>User:</strong> The client who gives a high-level objective (e.g., "Analyze AI trends").</li>
+            <li><strong>Planner / Orchestrator:</strong> The team lead that divides the objective into sequential subtasks.</li>
+            <li><strong>Agents:</strong> The team members (specialized in data analysis, reports, etc.) powered by Google Gemini AI.</li>
+            <li><strong>Tool Gateway:</strong> The security checkpoint ensuring agents only touch files they are allowed to touch.</li>
+            <li><strong>SQLite Database:</strong> The persistent company ledger that stores all runs, subtasks, and audit logs.</li>
+        </ul>
+    </div>
+
+    <h2>1.2 Why is this Needed? (The Problem with Normal AI Prompts)</h2>
+    <p>
+        When beginners use ChatGPT or Gemini directly in a single web prompt, the AI frequently hallucinates, cannot reliably execute multi-step computer tasks, and has no safety guardrails. If you gave an AI unrestricted access to your computer, it could accidentally delete system files or leak private data.
+    </p>
+    <p>
+        The MCI System solves this by providing:
+    </p>
+    <ul>
+        <li><strong>Deterministic Structure:</strong> Every action is broken down into structured, trackable steps stored in a database.</li>
+        <li><strong>Total Governance & Safety:</strong> Agents <em>never</em> touch files directly. They must submit a <code>ToolRequest</code> to the <code>ToolGateway</code>, which checks permissions and logs the attempt before anything is touched.</li>
+        <li><strong>Resilience:</strong> If an AI service experiences network congestion or rate limits, the system catches the error, falls back gracefully, and skips dependent subtasks cleanly.</li>
+    </ul>
+
+    <!-- SECTION 2 -->
+    <h1>2. Core Concepts Explained Simply</h1>
+
+    <h2>2.1 What is an "Agent"?</h2>
+    <p>
+        In everyday tech buzzwords, "AI Agent" sounds mystical. In our Java codebase, an agent is just an implementation of a simple Java interface:
+    </p>
+    <pre>public interface Agent {
+    AgentResult execute(SubTask subTask);
+}</pre>
+    <p>
+        When an agent runs:
+    </p>
+    <ol>
+        <li>It reads what it is supposed to do from <code>subTask.description()</code>.</li>
+        <li>It creates an AI prompt and sends it to Google's Gemini LLM.</li>
+        <li>It inspects the result: if it needs to save a report or read a file, it asks the <code>ToolGateway</code>.</li>
+        <li>It returns an <code>AgentResult.success(...)</code> or <code>AgentResult.failure(...)</code>.</li>
+    </ol>
+
+    <h2>2.2 What is the "Tool Gateway"? (Our Key Security Feature)</h2>
+    <p>
+        The <strong>ToolGateway</strong> is the security boundary of our entire architecture. It enforces the <em>Principle of Least Privilege</em>.
+    </p>
+    <div class="callout callout-security">
+        <div class="callout-title">Security Gateway Execution Pipeline</div>
+        <p>Whenever an agent wants to do an action (e.g., write a file), it cannot do <code>new FileWriter(...)</code>. Instead, it must call <code>gateway.execute(request)</code>. The gateway executes three strict steps:</p>
+        <ol>
+            <li><strong>Permission Check:</strong> Does <code>PermissionPolicy</code> allow this <code>AgentType</code> to run this tool? (e.g., <code>REPORT</code> agent can <code>file.write</code>, but unauthorized agents are blocked).</li>
+            <li><strong>Pre-Execution Audit Logging:</strong> The decision (<code>ALLOW</code> or <code>DENY</code>) is recorded in SQLite <strong>BEFORE</strong> the tool runs. Even if the program crashes or the tool fails, the audit trail is preserved!</li>
+            <li><strong>Safe Execution:</strong> Only if allowed, the tool is called within a sandboxed directory (<code>./workspace/</code>) with canonical path verification to prevent path-traversal attacks.</li>
+        </ol>
+    </div>
+
+    <h2>2.3 What is "LangChain4j"?</h2>
+    <p>
+        You know how Java uses <strong>JDBC</strong> to connect to databases? With JDBC, you use standard classes like <code>Connection</code>, <code>Statement</code>, and <code>ResultSet</code> whether your database is MySQL, PostgreSQL, or SQLite.
+    </p>
+    <p>
+        <strong>LangChain4j is the "JDBC of Artificial Intelligence".</strong> It is a clean Java library that provides standard interfaces like <code>ChatLanguageModel</code>. Whether we talk to Google Gemini, OpenAI ChatGPT, or a local Ollama model, our agent code stays identical. In our project, all Gemini interactions are isolated inside a single beginner-friendly class: <code>LlmFactory.java</code>.
+    </p>
+
+    <h2>2.4 What is SQLite & Why Did We Choose It?</h2>
+    <p>
+        SQLite is a self-contained, serverless SQL database engine. Unlike MySQL or PostgreSQL, you do not need to install a database server, configure user passwords, or run background daemons. The entire database is stored in a single file: <code>./data/mci.db</code>.
+    </p>
+    <p>
+        This makes our project <strong>100% portable</strong>: any classmate or teacher can clone our repository and run it immediately with zero database setup.
+    </p>
+
+    <!-- SECTION 3 -->
+    <h1>3. Technical Architecture & Module Deep-Dive</h1>
+
+    <h2>3.1 Maven Multi-Module Structure</h2>
+    <p>
+        Our project is structured as a professional Maven multi-module system. This enforces strict separation of concerns — classes in one module cannot accidentally violate architectural rules of another.
+    </p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Module</th>
+                <th>Role & Purpose</th>
+                <th>Key Classes</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>mci-core</code></td>
+                <td>Domain records, enums, and data models. Zero external dependencies.</td>
+                <td><code>Task</code>, <code>SubTask</code>, <code>AgentType</code>, <code>TaskStatus</code>, <code>ToolRequest</code>, <code>ToolResponse</code>, <code>Decision</code></td>
+            </tr>
+            <tr>
+                <td><code>mci-persistence</code></td>
+                <td>SQLite database connection and JDBC Data Access Objects (DAOs).</td>
+                <td><code>Database</code>, <code>RunDao</code>, <code>SubTaskDao</code>, <code>ArtifactDao</code>, <code>AuditDao</code>, <code>schema.sql</code></td>
+            </tr>
+            <tr>
+                <td><code>mci-tools</code></td>
+                <td>Safe implementations of computer tools (file read/write, path checking).</td>
+                <td><code>Tool</code> interface, <code>FileTool</code></td>
+            </tr>
+            <tr>
+                <td><code>mci-gateway</code></td>
+                <td>Security policy enforcement and audit recording.</td>
+                <td><code>ToolGateway</code>, <code>PermissionPolicy</code></td>
+            </tr>
+            <tr>
+                <td><code>mci-agents</code></td>
+                <td>LLM connection factory and agent execution logic.</td>
+                <td><code>LlmFactory</code>, <code>Agent</code>, <code>SimpleAgent</code></td>
+            </tr>
+            <tr>
+                <td><code>mci-orchestrator</code></td>
+                <td>Goal decomposition (Planner) and task dependency execution (Scheduler).</td>
+                <td><code>Planner</code>, <code>Scheduler</code></td>
+            </tr>
+            <tr>
+                <td><code>mci-app</code></td>
+                <td>Interactive Command-Line Interface (CLI), environment loader, and main runner.</td>
+                <td><code>Main</code>, <code>EnvLoader</code></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>3.2 High-Level Execution Data Flow</h2>
+    <div class="diagram-box">
+        <div class="flow-step">1. User Objective (CLI)</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">2. Planner (Gemini LLM)</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">3. Subtasks Stored in SQLite</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">4. Scheduler (Sequential)</div>
+        <br><br>
+        <div class="flow-step">5. Agent (SimpleAgent)</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">6. ToolGateway (Permission & Audit)</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">7. FileTool (Workspace Sandboxed)</div>
+        <span class="flow-arrow">&rarr;</span>
+        <div class="flow-step">8. Results Displayed in CLI</div>
+    </div>
+
+    <h2>3.3 Database Schema (SQLite Relational Design)</h2>
+    <p>
+        The system automatically creates 4 tables on first launch:
+    </p>
+    <ul>
+        <li><code>runs</code>: High-level objectives submitted by the user (with status <code>PENDING</code>, <code>RUNNING</code>, <code>DONE</code>, or <code>FAILED</code>).</li>
+        <li><code>subtasks</code>: The breakdown created by the planner, including foreign key <code>run_id</code>, assigned <code>agent_type</code>, <code>dependencies</code>, and final <code>result</code> text.</li>
+        <li><code>artifacts</code>: Metadata for files generated during the run (e.g., <code>report.md</code>) including file paths and MIME types.</li>
+        <li><code>audit_log</code>: Security ledger recording every single tool invocation, agent identity, timestamp, decision (<code>ALLOW</code>/<code>DENY</code>), and reason.</li>
+    </ul>
+
+    <!-- SECTION 4 -->
+    <h1>4. Current Status: What is Working Today (30% Evaluation)</h1>
+
+    <div class="callout callout-success">
+        <div class="callout-title">30% Milestone Status: Fully Operational & Verified!</div>
+        <p>The core backbone of the Multi-Agent Computer Intelligence System is fully implemented, compiling with zero errors, and verified against Google's Gemini API.</p>
+    </div>
+
+    <h2>4.1 Checklist of Working Components</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Component</th>
+                <th>Status</th>
+                <th>Verification Detail</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Maven Multi-Module Build</strong></td>
+                <td>100% Operational</td>
+                <td>All 8 modules compile and package cleanly (<code>mvnw install</code> passes).</td>
+            </tr>
+            <tr>
+                <td><strong>SQLite Persistence</strong></td>
+                <td>100% Operational</td>
+                <td>Tables auto-created on startup; runs, tasks, and audit logs persist to <code>./data/mci.db</code>.</td>
+            </tr>
+            <tr>
+                <td><strong>Gemini LLM Connectivity</strong></td>
+                <td>100% Operational</td>
+                <td>Integrated with <code>gemini-3.8-flash</code> via LangChain4j; passes live startup check (<code>"MCI System Online!"</code>).</td>
+            </tr>
+            <tr>
+                <td><strong>Dynamic Planner</strong></td>
+                <td>100% Operational</td>
+                <td>Uses Gemini to break goals into subtasks; features an automatic 3-step fallback if the API is congested.</td>
+            </tr>
+            <tr>
+                <td><strong>Security Tool Gateway</strong></td>
+                <td>100% Operational</td>
+                <td>Intercepts all tool requests, verifies permissions against policy, and writes pre-execution audit records.</td>
+            </tr>
+            <tr>
+                <td><strong>File Operations Tool</strong></td>
+                <td>100% Operational</td>
+                <td>Reads and writes files inside <code>./workspace/&lt;runId&gt;/</code> with canonical path traversal validation.</td>
+            </tr>
+            <tr>
+                <td><strong>Sequential Scheduler</strong></td>
+                <td>100% Operational</td>
+                <td>Executes subtasks in order, checks database status, updates progress, and handles failure cascades.</td>
+            </tr>
+            <tr>
+                <td><strong>Interactive CLI (Main)</strong></td>
+                <td>100% Operational</td>
+                <td>User enters objectives interactively, inspects live results, views audit trails with <code>audit</code>, and exits with <code>quit</code>.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>4.2 Future Roadmap (Remaining 70% to Full Production System)</h2>
+    <p>
+        In our codebase, the architecture is designed so that future features plug in without rewriting the core:
+    </p>
+    <ul>
+        <li><strong>Specialized Agents (Phase 2):</strong> Adding distinct agent classes such as <code>NavigatorAgent</code> (web browsing), <code>DataFileAgent</code> (CSV/JSON processing), and <code>ShellAgent</code> (safe terminal execution).</li>
+        <li><strong>Parallel DAG Scheduler (Phase 3):</strong> Upgrading from the current sequential scheduler to a topological sort dependency scheduler that runs non-dependent tasks concurrently.</li>
+        <li><strong>Spring Boot REST Endpoints (Phase 4):</strong> Exposing <code>POST /api/runs</code>, <code>GET /api/runs/{id}</code>, and Server-Sent Events (SSE) for live streaming (already architected and commented in <code>Main.java</code>).</li>
+        <li><strong>Web UI / Dashboard (Phase 5):</strong> A clean Next.js/React frontend allowing users to watch agents work visually in real time.</li>
+    </ul>
+
+    <!-- SECTION 5 -->
+    <h1>5. Demo Script & Viva / Q&A Guide</h1>
+
+    <h2>5.1 Step-by-Step Demo Script for Your Teacher</h2>
+    <ol>
+        <li>
+            <strong>Open Terminal & Navigate to Project:</strong>
+            <pre>cd d:\java_project\mci-system</pre>
+        </li>
+        <li>
+            <strong>Launch the Application:</strong>
+            <pre>.\mvnw.cmd exec:java -pl mci-app</pre>
+        </li>
+        <li>
+            <strong>Explain What Happens on Boot:</strong>
+            <ul>
+                <li>Show the banner.</li>
+                <li>Point out: <em>"Mam, notice it loaded our API key from the private <code>.env</code> file, initialized the SQLite database in <code>data/mci.db</code>, and ran a quick handshake test with Gemini AI."</em></li>
+            </ul>
+        </li>
+        <li>
+            <strong>Run a Sample Objective:</strong>
+            <pre>> Your objective: Research quantum computing and generate a summary report</pre>
+            <p>Explain: <em>"The Planner calls Gemini to decompose this goal into 3 subtasks (analyze, gather, write report). The Scheduler executes each subtask. The Report agent writes <code>workspace/run-1/report.md</code> through our Security Gateway."</em></p>
+        </li>
+        <li>
+            <strong>Demonstrate the Security Audit Log:</strong>
+            <pre>> Your objective: audit</pre>
+            <p>Explain: <em>"Mam, look at this table — every single tool call was vetted by the ToolGateway and recorded in our SQLite audit ledger before execution. This ensures complete AI governance."</em></p>
+        </li>
+        <li>
+            <strong>Exit Gracefully:</strong>
+            <pre>> Your objective: quit</pre>
+        </li>
+    </ol>
+
+    <h2>5.2 Common Questions Teacher Might Ask (With Recommended Answers)</h2>
+
+    <div class="qa-item">
+        <div class="qa-question">Q1: Why did you split the project into so many Maven modules instead of one folder?</div>
+        <div class="qa-answer"><strong>Answer:</strong> "Separation of concerns. In software engineering, modularity prevents tight coupling. For example, <code>mci-core</code> has zero dependencies, meaning our data models are pure. <code>mci-gateway</code> does not know about specific agents, only tools and policies. This architecture allows multiple developers to work on different modules in parallel without code conflicts."</div>
+    </div>
+
+    <div class="qa-item">
+        <div class="qa-question">Q2: What is the purpose of the ToolGateway? Why not let agents use FileWriter directly?</div>
+        <div class="qa-answer"><strong>Answer:</strong> "Direct access is dangerous. In autonomous systems, allowing an LLM unmonitored file access violates the principle of least privilege. The ToolGateway acts as a security firewall: it verifies agent permissions, records an immutable audit log entry in the database BEFORE the operation happens, and ensures file paths cannot escape the sandbox using canonical path validation."</div>
+    </div>
+
+    <div class="qa-item">
+        <div class="qa-question">Q3: What happens if Google's Gemini API is down, rate-limited, or slow?</div>
+        <div class="qa-answer"><strong>Answer:</strong> "Our system is fault-tolerant. In <code>Planner.java</code>, we wrap the Gemini API call in a try-catch block. If an HTTP 503 or network failure occurs, the planner automatically falls back to a deterministic 3-step plan. In <code>Scheduler.java</code>, if a subtask fails, all downstream subtasks that depend on it are safely marked as <code>SKIPPED</code>."</div>
+    </div>
+
+    <div class="qa-item">
+        <div class="qa-question">Q4: Why did you use SQLite and standard JDBC rather than JPA/Hibernate?</div>
+        <div class="qa-answer"><strong>Answer:</strong> "For college evaluation and simplicity, standard JDBC with SQLite is zero-configuration and transparent. There is no heavy ORM overhead, no complex mapping XMLs, and anyone can inspect the exact SQL queries in our DAO classes. The database file <code>mci.db</code> can be opened and verified with any standard SQLite viewer."</div>
+    </div>
+
+    <div class="qa-item">
+        <div class="qa-question">Q5: What is LangChain4j and why did you use it?</div>
+        <div class="qa-answer"><strong>Answer:</strong> "LangChain4j is the leading Java framework for AI integration. It acts like JDBC for LLMs. Instead of manually writing HTTP client requests and JSON parsers for Google Gemini, LangChain4j gives us a clean <code>ChatLanguageModel</code> interface. If tomorrow we want to switch from Gemini to local Ollama or OpenAI, we only change one line in <code>LlmFactory.java</code>."</div>
+    </div>
+
+</body>
+</html>

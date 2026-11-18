@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.mci</groupId>
+    <artifactId>mci-system</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>Multi-Agent Computer Intelligence System</name>
+    <description>Parent POM for the Multi-Agent Computer Intelligence System (Java 21)</description>
+
+    <modules>
+        <module>mci-core</module>
+        <module>mci-persistence</module>
+        <module>mci-tools</module>
+        <module>mci-gateway</module>
+        <module>mci-agents</module>
+        <module>mci-orchestrator</module>
+        <module>mci-app</module>
+        <module>mci-web</module>
+    </modules>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.release>21</maven.compiler.release>
+        <langchain4j.version>0.36.2</langchain4j.version>
+        <sqlite.version>3.47.2.0</sqlite.version>
+        <slf4j.version>2.0.16</slf4j.version>
+        <logback.version>1.5.11</logback.version>
+        <junit.version>5.11.4</junit.version>
+        <jsoup.version>1.18.3</jsoup.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- MCI Internal Modules -->
+            <dependency>
+                <groupId>com.mci</groupId>
+                <artifactId>mci-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mci</groupId>
+                <artifactId>mci-persistence</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mci</groupId>
+                <artifactId>mci-tools</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mci</groupId>
+                <artifactId>mci-gateway</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mci</groupId>
+                <artifactId>mci-agents</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mci</groupId>
+                <artifactId>mci-orchestrator</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Logging -->
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+
+            <!-- Testing -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.13.0</version>
+                    <configuration>
+                        <release>21</release>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>3.5.2</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+</project>

@@ -1,0 +1,38 @@
+# IDE / build output
+target/
+**/target/
+*.class
+*.jar
+!**/.mvn/wrapper/maven-wrapper.jar
+*.log
+**/logs/
+
+# Environment secrets — NEVER commit
+.env
+**/.env
+*.env
+!.env.example
+!**/.env.example
+
+# Database files
+data/
+**/data/
+*.db
+*.sqlite
+*.sqlite3
+
+# Workspace files created by agents
+workspace/
+**/workspace/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# OS generated files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,42 @@
+# Root .gitignore for MCI Java Project
+
+# Build targets & binaries
+**/target/
+target/
+*.class
+*.jar
+!**/.mvn/wrapper/maven-wrapper.jar
+
+# Secrets and local environment configs — NEVER commit
+.env
+**/.env
+*.env
+!.env.example
+!**/.env.example
+
+# SQLite Databases & data folders
+**/data/
+data/
+*.db
+*.sqlite
+*.sqlite3
+
+# Agent workspace runs and generated outputs
+**/workspace/
+workspace/
+
+# Logs
+*.log
+**/logs/
+
+# IDE configurations
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# OS generated files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.mci</groupId>
+        <artifactId>mci-system</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>mci-gateway</artifactId>
+    <packaging>jar</packaging>
+
+    <name>mci-gateway</name>
+    <description>Security gateway, permission policy enforcement, and audit logging</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.mci</groupId>
+            <artifactId>mci-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mci</groupId>
+            <artifactId>mci-persistence</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.mci</groupId>
+            <artifactId>mci-tools</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

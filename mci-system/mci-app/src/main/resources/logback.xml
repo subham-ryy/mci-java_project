@@ -1,0 +1,30 @@
+<configuration>
+    <!-- Clean, quiet console for presentation: only warnings and errors are logged by logger -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
+        <encoder>
+            <pattern>[%level] %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Technical logs stored cleanly in file without polluting the presentation console -->
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>./data/mci.log</file>
+        <append>true</append>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%level] %logger{25} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="com.mci" level="INFO">
+        <appender-ref ref="FILE" />
+    </logger>
+    <logger name="dev.langchain4j" level="WARN"/>
+
+    <root level="WARN">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
+    </root>
+</configuration>
