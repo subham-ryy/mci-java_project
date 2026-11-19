@@ -46,15 +46,26 @@ public class DockerAgent implements Agent {
                             You are a senior DOCKER and software computation agent in a multi-agent intelligence system.
                             Your subtask is: "%s"
 
-                            Write a complete, self-contained, robust Python 3 script to perform the requested calculation, simulation, or data processing.
+                            Write a complete, self-contained, robust Python 3 script to perform the requested calculation, simulation, data processing, or visual analysis.
                             Requirements:
                             - The script must print clear, structured results and key performance metrics to stdout.
-                            - Do not rely on external non-standard libraries (use Python standard libraries such as math, statistics, time, sys, json, os).
+                            - You may use standard libraries (math, statistics, time, sys, json, os) as well as data science & plotting libraries: numpy, matplotlib.pyplot.
+                            - CRITICAL FOR GRAPHS, CHARTS & VISUALIZATIONS:
+                              * If the subtask asks for or mentions creating a graph, plot, chart, or visual analysis (or if plotting would enhance the results):
+                                1. Always configure headless backend at the very top of the script:
+                                   import matplotlib
+                                   matplotlib.use('Agg')
+                                   import matplotlib.pyplot as plt
+                                2. Design clean, informative charts (add titles, axis labels, grid, and legend).
+                                3. Save the figure to the current workspace directory as 'chart.png':
+                                   plt.savefig('chart.png', dpi=150, bbox_inches='tight')
+                                   plt.close()
+                                4. Print: "[Chart Saved: chart.png]" so the system registers the deliverable.
                             - Include basic error handling.
 
                             Format your response EXACTLY as:
                             ===EXPLANATION===
-                            <1-2 sentences explaining what the script computes>
+                            <1-2 sentences explaining what the script computes and plots>
                             ===CODE===
                             <raw python code only, without markdown backticks>
                             """.formatted(subTask.description());
@@ -77,6 +88,8 @@ public class DockerAgent implements Agent {
                             %s
 
                             Analyze the error and provide a corrected, working Python 3 script.
+                            If the error is related to matplotlib display or GUI, ensure 'import matplotlib; matplotlib.use(\\'Agg\\')' is set before importing pyplot, and save using 'plt.savefig(\\'chart.png\\')'.
+
                             Format your response EXACTLY as:
                             ===EXPLANATION===
                             <explanation of the bug and fix applied>

@@ -1494,6 +1494,16 @@
       background: #D4EFDF;
     }
 
+    .file-chip.chip-image {
+      border-color: #B5DFCA;
+      background: #E8F8F0;
+      color: #196F3D;
+      font-weight: 600;
+    }
+    .file-chip.chip-image:hover {
+      background: #D4EFDF;
+    }
+
     .file-chip.chip-data {
       border-color: #D2B4DE;
       background: #FAF5FB;
@@ -2677,6 +2687,9 @@
       } else if (lower.endsWith('.json')) {
         icon = '📊';
         agent = 'DATA_FILE';
+      } else if (lower.endsWith('.png') || lower.endsWith('.jpg') || lower.endsWith('.jpeg') || lower.endsWith('.svg')) {
+        icon = '🖼️';
+        agent = 'DOCKER';
       } else if (lower.endsWith('.py')) {
         icon = '⚡';
         agent = 'DOCKER';
@@ -2694,7 +2707,22 @@
       body.innerHTML = '<div style="padding: 40px; text-align: center; color: var(--text-muted);">Loading file content...</div>';
       modal.classList.add('open');
 
-      // 1. PDF Handling
+      // 1. Image / Visual Chart Handling
+      if (lower.endsWith('.png') || lower.endsWith('.jpg') || lower.endsWith('.jpeg') || lower.endsWith('.svg')) {
+        sizeBadgeEl.textContent = 'Visual Analysis Plot';
+        body.innerHTML = `
+          <div style="padding: 32px 24px; text-align: center; background: #1C1B19; min-height: 480px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <img src="${viewUrl}" alt="${escapeHtml(fileName)}" style="max-width: 95%; max-height: calc(85vh - 160px); border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); object-fit: contain; background: #ffffff;" />
+            <div style="margin-top: 18px; color: #E6E1DA; font-size: 13.5px; display: flex; gap: 16px; align-items: center;">
+              <span>🖼️ <strong>Generated Visual Analysis Plot:</strong> ${escapeHtml(fileName)}</span>
+              <a href="${viewUrl}" target="_blank" style="color: #6DB389; font-weight: 600; text-decoration: underline;">Open Full Resolution ↗</a>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      // 2. PDF Handling
       if (lower.endsWith('.pdf')) {
         sizeBadgeEl.textContent = 'PDF Document';
         body.innerHTML = `
@@ -2819,6 +2847,10 @@
             } else if (lower.endsWith('.json')) {
               chipClass += ' chip-data';
               icon = '📊';
+            } else if (lower.endsWith('.png') || lower.endsWith('.jpg') || lower.endsWith('.jpeg')) {
+              chipClass += ' chip-image';
+              icon = '🖼️';
+              label = `${a.name} (View Plot)`;
             } else if (lower.endsWith('.py')) {
               chipClass += ' chip-code';
               icon = '⚡';
@@ -2860,6 +2892,9 @@
             } else if (lower.endsWith('.json')) {
               icon = '📊';
               kindDesc = 'Normalized JSON Dataset';
+            } else if (lower.endsWith('.png') || lower.endsWith('.jpg') || lower.endsWith('.jpeg')) {
+              icon = '🖼️';
+              kindDesc = 'Generated Visual Analysis Plot';
             } else if (lower.endsWith('.py')) {
               icon = '⚡';
               kindDesc = 'Executable Python Script';
@@ -3033,7 +3068,7 @@
 
       grid.innerHTML = artifacts.map(a => {
         const lower = a.name.toLowerCase();
-        const icon = lower.endsWith('.pdf') ? '📑' : (lower.endsWith('.md') ? '📝' : (lower.endsWith('.py') ? '⚡' : (lower.endsWith('.json') ? '📊' : '📁')));
+        const icon = lower.endsWith('.pdf') ? '📑' : (lower.endsWith('.md') ? '📝' : (lower.endsWith('.png') || lower.endsWith('.jpg') ? '🖼️' : (lower.endsWith('.py') ? '⚡' : (lower.endsWith('.json') ? '📊' : '📁'))));
         const downloadUrl = `${API_BASE}/runs/${runId}/artifacts/${encodeURIComponent(a.name)}/download`;
         const sizeStr = a.size ? formatBytes(a.size) : a.kind;
 

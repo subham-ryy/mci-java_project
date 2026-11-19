@@ -259,8 +259,9 @@ public class RunExecutionService {
 
     public static String determineAgentForFile(String fileName) {
         String lower = fileName.toLowerCase();
-        if (lower.endsWith(".py") || lower.contains("docker")) return "DOCKER";
+        if (lower.endsWith(".py") || lower.contains("docker") || lower.endsWith(".png") || lower.endsWith(".jpg") || lower.contains("chart")) return "DOCKER";
         if (lower.endsWith(".md") || lower.contains("report")) return "REPORT";
+        if (lower.contains("source") || lower.contains("url")) return "NAVIGATOR";
         if (lower.endsWith(".pdf") || lower.endsWith(".json") || lower.endsWith(".csv")) return "DATA_FILE";
         return "DATA_FILE";
     }

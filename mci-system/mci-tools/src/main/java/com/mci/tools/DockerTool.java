@@ -30,6 +30,10 @@ public class DockerTool implements Tool {
             "python:3.12-slim",
             "python:3.11-slim",
             "python:3-slim",
+            "python:3.12",
+            "python:3.11",
+            "python:3",
+            "python:latest",
             "python:3.12-alpine",
             "python:alpine",
             "node:20-alpine",
@@ -157,8 +161,8 @@ public class DockerTool implements Tool {
             } else if (image.startsWith("openjdk")) {
                 cmd.add("java");
             } else {
-                // Default: Python runner
-                cmd.add("python");
+                // Default: Python runner (selects Windows Python Launcher if present for full package support)
+                cmd.add(resolvePythonCommand());
             }
             cmd.add(scriptName);
 
@@ -250,6 +254,22 @@ public class DockerTool implements Tool {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    /**
+     * Resolves the most capable Python executable on the host system.
+     * On Windows, prefers 'py' (the Python launcher) which points to full Python 3.11 with numpy & matplotlib.
+     */
+    private String resolvePythonCommand() {
+        if (System.getProperty("os.name", "").toLowerCase(Locale.ROOT).contains("win")) {
+            try {
+                Process p = new ProcessBuilder("py", "--version").start();
+                if (p.waitFor(1, TimeUnit.SECONDS) && p.exitValue() == 0) {
+                    return "py";
+                }
+            } catch (Exception ignored) {}
+        }
+        return "python";
     }
 
     private boolean isInsideWorkspace(File file) {

@@ -1,0 +1,163 @@
+================================================================================
+MULTI-AGENT COMPUTER INTELLIGENCE (MCI) SYSTEM
+ACADEMIC PROJECT REPORT — MASTER TABLE OF CONTENTS
+Course: ADVANCED JAVA PROGRAMMING (CSE 213)
+Course Instructor: Praneetha Surapaneni, Assistant Professor
+Department of Computer Science and Engineering, SRM University, AP
+Date: November 2026
+
+Team Members:
+1. Subham Roy          (AP25110080092)
+2. Shreyas Poondota    (AP25110080064)
+3. Muhammad Ismail     (AP25110080094)
+4. Utkarsh Nayan       (AP25110080089)
+================================================================================
+
+TARGET DOCUMENT SCOPE: 35 – 45 PAGES
+- Writing Tone: Clear, authentic, human-like, grounded in reality.
+  Strictly avoiding inflated marketing buzzwords ("impenetrable", "enterprise grade",
+  "absolute defense-in-depth", "industrial standard").
+- Ground Truth Submodules (8 Modules):
+  1. mci-core
+  2. mci-persistence
+  3. mci-tools
+  4. mci-gateway
+  5. mci-agents
+  6. mci-orchestrator
+  7. mci-app
+  8. mci-web
+- Ground Truth 4 Agents:
+  1. Navigator Agent  (browser.fetch, file.write)
+  2. Docker Agent     (docker.run, file.read, file.write)
+  3. Data & File Agent(file.read, file.write, pdf.generate)
+  4. Report Agent     (file.read, file.write, pdf.generate)
+- Ground Truth Sandbox:
+  512MB RAM ceiling, 1.0 CPU quota, 20-second hard timeout, --network none,
+  ProcessBuilder unprivileged fallback.
+- Technology Versions:
+  Java 21 LTS, Spring Boot 3.3.5, LangChain4j 0.36.2, SQLite JDBC 3.47.2.0.
+
+================================================================================
+STRUCTURE & PAGE ALLOCATION
+================================================================================
+
+FRONT MATTER (Pages 1 – 5)
+  - Cover Page (SRM Logo: srm_logo.png, Course, Student Credentials, Guide)
+  - Acknowledgement (SRM Leadership, VC, Dean, HOD Dr. Manikandan, Instructor)
+  - Certificate of Originality (Formal sign-off block)
+  - Abstract (Concise, authentic architectural summary)
+  - Table of Contents
+  - List of Figures and Tables
+
+CHAPTER 1: INTRODUCTION & PROJECT MOTIVATION (Pages 6 – 8)
+  1.1 The Challenge with Autonomous AI Agents
+  1.2 What We Built: The Multi-Agent Computer Intelligence (MCI) System
+  1.3 Why We Chose Java 21 Over Python
+  1.4 Core Invariants of the System (Default-Deny, Audit-First, 20s Sandbox)
+  1.5 Report Structure & Organization
+
+CHAPTER 2: BACKGROUND & RELATED WORK (Pages 9 – 11)
+  2.1 From Chatbots to Agentic AI (ReAct Loop, Multi-Agent Collaboration)
+  2.2 Real Security Risks in Agent Workflows (OWASP Top 10 for LLMs)
+  2.3 Concurrency Models: OS Platform Threads vs. Java 21 Virtual Threads
+  2.4 Technology Stack Choices (LangChain4j, Gemini 2.5, Spring Boot 3.3.5)
+
+CHAPTER 3: HIGH-LEVEL ARCHITECTURE & MODULAR DECOMPOSITION (Pages 12 – 15)
+  3.1 Clean Architectural Blueprint
+  3.2 The 8 Maven Submodules (mci-core, mci-persistence, mci-tools, mci-gateway,
+      mci-agents, mci-orchestrator, mci-app, mci-web)
+  3.3 Life of a Task: End-to-End Data Flow
+  3.4 Architecture Flowchart (Clean Architecture diagram)
+      [FIGURE 3.1: 3D Architectural Render of System Ecosystem (asset.png)]
+
+CHAPTER 4: CORE DOMAIN MODELS & PERSISTENCE LAYER (Pages 16 – 19)
+  4.1 Domain Invariants Using Java 21 Records (mci-core)
+      (Task, SubTask, ToolRequest, ToolResponse, Decision, AgentType, TaskStatus)
+  4.2 Relational Database Schema Design (schema.sql)
+      (runs, subtasks, permissions, audit_log, artifacts)
+  4.3 Plain JDBC Data Access Objects (mci-persistence)
+      (RunDao, SubTaskDao, AuditDao, ArtifactDao)
+  4.4 SQLite Concurrency & File Management
+
+CHAPTER 5: THE ZERO-TRUST SECURITY TOOL GATEWAY (mci-gateway) (Pages 20 – 23)
+  5.1 The Gateway as a Central Chokepoint (ToolGateway.java)
+  5.2 The Permission Policy Engine (PermissionPolicy.java & Default-Deny Allowlist)
+  5.3 Audit-Before-Execution: The Immutable Decision Ledger
+  5.4 Live Gateway Telemetry (ToolGatewayListener.java)
+  5.5 Code Walkthrough & Visual Proof
+      [FIGURE 5.1: Live Security Gateway Audit Log View (ui_audit_log.png)]
+
+CHAPTER 6: TOOL ACTUATORS & SANDBOX MECHANICS (mci-tools) (Pages 24 – 27)
+  6.1 The Unified Tool Interface (Tool.java)
+  6.2 Safe Filesystem Operations (FileTool.java & FileWriterTool.java with Path Traversal Defense)
+  6.3 Isolated Container Execution (DockerTool.java):
+      (512MB RAM, 1.0 CPU, 20-Second Timeout, --network none)
+  6.4 The Resilient ProcessBuilder Fallback Runner
+  6.5 Safe Web Browsing (BrowserTool.java with Jsoup & SSRF Loopback Defense)
+  6.6 PDF Document Generation (PdfTool.java)
+
+CHAPTER 7: AUTONOMOUS MULTI-AGENT SWARM (mci-agents) (Pages 28 – 31)
+  7.1 The Agent Contract & Dispatcher Pattern (Agent.java & AgentDispatcher.java)
+  7.2 Deep Dive into the 4 Specialized Agents:
+      7.2.1 Navigator Agent  (Web research, query synthesis, sources.txt)
+      7.2.2 Docker Agent     (Code generation, sandboxed execution, write-run-fix loop)
+      7.2.3 Data & File Agent(Data analysis, calculations, data.json, results.pdf)
+      7.2.4 Report Agent     (Executive Markdown report synthesis in report.md)
+  7.3 Model Factory & Prompt Resilience (LlmFactory.java with Gemini API Retry)
+  7.4 Visual Verification of the Swarm
+      [DIAGRAM: Multi-Agent Interaction & Task Handoff Flowchart]
+      [FIGURE 7.1: Agent Ecosystem & Security Boundary View (ui_agents_security.png)]
+
+CHAPTER 8: ORCHESTRATION: DYNAMIC PLANNING & DAG SCHEDULING (mci-orchestrator) (Pages 32 – 34)
+  8.1 Dynamic Goal Decomposition (Planner.java with Gemini)
+  8.2 Dependency-Aware Scheduling (Scheduler.java)
+  8.3 Handling Failures Gracefully (Skipping dependent tasks upon upstream failure)
+  8.4 Event Emitters for Real-Time Feedback (SchedulerListener.java)
+
+CHAPTER 9: WEB LAYER & FULL-STACK INTEGRATION (mci-web) (Pages 35 – 37)
+  9.1 Spring Boot 3.3.5 REST API Design (RunController.java)
+  9.2 Live Event Streaming via Server-Sent Events (SSE)
+  9.3 Asynchronous Execution Service (RunExecutionService.java)
+  9.4 Security & CORS Management (CorsConfig.java)
+
+CHAPTER 10: FRONTEND ARCHITECTURE & USER EXPERIENCE (frontend/) (Pages 38 – 40)
+  10.1 Design Philosophy: Editorial Tone & Clean Layout (vgg.html, #F0E9E3)
+  10.2 Walkthrough of Core Dashboard Views:
+       10.2.1 Overview & Hero Section (Active stats & recent activity)
+              [FIGURE 10.1: Overview Dashboard Interface (ui_overview.png)]
+       10.2.2 Agent Ecosystem & Security View (Badges & permission cards)
+       10.2.3 Security Gateway Audit Log View (Real-time decision table)
+       10.2.4 Runs & Terminal Execution Console
+  10.3 Seamless Frontend Integration (Eliminating visual boundary seams)
+
+CHAPTER 11: REAL-WORLD ENGINEERING HURDLES & RESOLUTIONS (Pages 41 – 43)
+  11.1 Challenge 1: LLM Non-Determinism & Response Parsing
+  11.2 Challenge 2: Windows vs. Linux Quirks in Process Execution
+  11.3 Challenge 3: SQLite File Locking Under High Concurrency
+  11.4 Challenge 4: Preventing SSRF Redirect Attacks in Web Fetching
+  11.5 Challenge 5: Coordinating Subtask Dependencies Without Deadlocks
+
+CHAPTER 12: TESTING, VERIFICATION & SECURITY VALIDATION (Pages 44 – 46)
+  12.1 Unit and Integration Testing Suite (JUnit 5 across modules)
+  12.2 Red-Team Attack Simulation & Security Tests:
+       12.2.1 Directory Traversal Test (../../etc/passwd blocked)
+       12.2.2 SSRF Loopback Attack (http://localhost:8080 blocked)
+       12.2.3 Unauthorized Tool Invocation (Denied by Gateway allowlist)
+       12.2.4 Resource Exhaustion / Fork Bomb in Docker (512MB & 20s watchdog kill)
+  12.3 Performance & Gateway Overhead Benchmarks
+
+CHAPTER 13: CONCLUSION & FUTURE SCOPE (Pages 47 – 48)
+  13.1 Summary of Contributions
+  13.2 Key Takeaways from Building with Java 21 & AI Agents
+  13.3 Future Roadmap (Distributed workers, Kubernetes sandboxes, eBPF tracing)
+
+REFERENCES (Page 49)
+  Academic papers & official technical references
+
+APPENDICES (Pages 50 – 52)
+  Appendix A: Complete SQLite Database Schema (schema.sql)
+  Appendix B: Sample Gateway Audit Trail Log (audit_log table output)
+  Appendix C: Sample Generated Executive Incident Report (report.md)
+  Appendix D: Master Maven Project Configuration (pom.xml)
+  Appendix E: Environment Setup & Execution Guidelines (.env & run-web.cmd)
+================================================================================

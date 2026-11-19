@@ -80,6 +80,7 @@ public class Main {
         PermissionPolicy policy = new PermissionPolicy();
         ToolGateway gateway = new ToolGateway(policy, auditDao);
         gateway.registerTool("file", fileTool);
+        gateway.registerTool("file.read", fileTool);
         gateway.registerTool("file.write", fileWriterTool);
         gateway.registerTool("pdf.generate", pdfTool);
         gateway.registerTool("pdf", pdfTool);

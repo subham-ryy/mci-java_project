@@ -47,7 +47,7 @@ public class Planner {
                     Rules:
                     - NAVIGATOR agent browses external websites and fetches live web pages (e.g. articles, technical overviews, URLs) to extract real-world facts and saves sources.txt
                     - DATA_FILE agent conducts in-depth data analysis, calculates metrics, and compiles results into results.pdf and data.json
-                    - DOCKER agent writes and executes code or scripts in sandboxed containers (docker.run) to perform simulations, computational processing, benchmarks, and algorithm tasks
+                    - DOCKER agent writes and executes code or scripts in sandboxed containers (docker.run) to perform simulations, computational processing, benchmarks, algorithms, and data visualizations/charts (matplotlib, numpy, chart.png) when requested
                     - REPORT agent always comes LAST and synthesizes all findings into the final executive Markdown report (report.md)
                     - The last step should ALWAYS be a REPORT step
 
