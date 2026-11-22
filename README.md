@@ -7,6 +7,8 @@
 
 An enterprise-grade, zero-trust autonomous multi-agent orchestration platform built with **Java 21**, **Spring Boot**, and **Google Gemini AI**. MCI provides coordinated multi-agent mission planning, strictly-governed tool execution, Docker sandboxing, and real-time monitoring via both a modern interactive Web Dashboard and an ANSI-enhanced CLI.
 
+![MCI Web Command Center](docs/images/web_dashboard.png)
+
 ---
 
 ## 🏗️ Architecture Overview
